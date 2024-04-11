@@ -6,6 +6,8 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.scene.shape.Line;
+import javafx.stage.StageStyle;
 
 
 public class Main extends Application {
@@ -27,8 +29,39 @@ public class Main extends Application {
         primaryStage.setWidth(960);
         primaryStage.setHeight(640);
         primaryStage.setResizable(false);
+        //primaryStage.initStyle(StageStyle.UNDECORATED);
+
+        Line[] lines = new Line[961];
+        for (int i = 0; i <= 960; i++) {
+            lines[i] = new Line();
+            drawLine(lines[i], i, 640 / 2 - 100, i, 640 / 2 + 100, 1, Color.WHITE, root);
+        }
+
+        /*  -- How to draw a Line --
+            Line line = new Line();
+            line.setStartX();
+            line.setStartY();
+            line.setEndX();
+            line.setEndY();
+            line.setStrokeWidth();
+            line.setStroke();
+
+            root.getChildren().add(line);
+
+         */
+
 
         primaryStage.setScene(primaryScene);
         primaryStage.show();
+    }
+
+    public void drawLine(Line line, int startX, int startY, int endX, int endY, int width, Color color, Group root) {
+        line.setStartX(startX);
+        line.setStartY(startY);
+        line.setEndX(endX);
+        line.setEndY(endY);
+        line.setStrokeWidth(width);
+        line.setStroke(color);
+        root.getChildren().add(line);
     }
 }

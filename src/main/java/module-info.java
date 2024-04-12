@@ -11,6 +11,7 @@ module net.bilaljh.fubar {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires javafx.graphics;
+    requires annotations;
 
     opens net.bilaljh.fubar to javafx.fxml;
     exports net.bilaljh.fubar;

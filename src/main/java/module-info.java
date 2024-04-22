@@ -12,6 +12,7 @@ module net.bilaljh.fubar {
     requires com.almasb.fxgl.all;
     requires javafx.graphics;
     requires annotations;
+    requires java.desktop;
 
     opens net.bilaljh.fubar to javafx.fxml;
     exports net.bilaljh.fubar;

@@ -18,23 +18,33 @@ public class Display {
     Group root;
     Scene primaryScene;
 
+    Line playerLine;
     Line[] lines;
     Rectangle[] rectangles;
     Rectangle player = new Rectangle();
 
-    double currentAngle;
+    private double currentAngle;
+    private final int WIDTH = 2560;
+    private final int HEIGHT = 1440;
 
     public Display() {
         primaryStage = new Stage();
         root = new Group();
         primaryScene = new Scene(root, Color.BLACK);
+        playerLine = new Line();
+        lines = new Line[90];
 
-        Image icon = new Image("LS00.png");
 
-        primaryStage.getIcons().add(icon);
+        //Image icon = new Image("LS00.png");
+
+        //primaryStage.getIcons().add(icon);
         primaryStage.setTitle("Fubar! - PreAlpha v0.1");
-        primaryStage.setWidth(990);
-        primaryStage.setHeight(640);
+        //primaryStage.setWidth(990);
+        primaryStage.setWidth(WIDTH);
+        primaryStage.setHeight(HEIGHT);
+
+//        primaryStage.setWidth(1500);
+//        primaryStage.setHeight(640);
         primaryStage.setResizable(false);
         //primaryStage.initStyle(StageStyle.UNDECORATED);
 
@@ -52,7 +62,7 @@ public class Display {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    Main.engine.castRays(Main.player);
+                    Main.engine.castRays();
                     draw();
                 });
             }
@@ -60,45 +70,57 @@ public class Display {
     }
 
     public void draw() {
+        draw2D();
+        //draw3D();
+    }
 
-        lines = new Line[90];
-        rectangles = new Rectangle[64];
+    public void draw2D() {
+
+
+        rectangles = new Rectangle[1024];
         root.getChildren().clear();
         double posX = 0;
         double posY = 0;
         int counter = 0;
 
-        for(int i = 0; i < 8; i++) {
-            for(int ii = 0; ii < 8; ii++) {
+        for(int i = 0; i <= Main.map.getMapBorderX(); i++) {
+            for(int ii = 0; ii <= Main.map.getMapBorderY(); ii++) {
                 rectangles[counter] = new Rectangle();
                 drawRect(rectangles[counter], posX, posY, 64, 64, Main.map.map[i][ii], root);
                 posY += 64 + 1;
                 counter++;
+                //System.out.println(counter);
             }
             posX += 64 + 1;
             posY = 0;
         }
 
-        drawRect(player, Main.player.getPosX(), Main.player.getPosY(), 20, 20, 6, root);
+        drawRect(player, Main.player.getPosX() - 10, Main.player.getPosY() - 10, 20, 20, 6, root);
+        for(int i = 0; i < 90; i++) {
+            lines[i] = new Line();
+            drawLine(lines[i], Main.player.getPosX(), Main.player.getPosY(), Main.rays[i].getEndX(), Main.rays[i].getEndY(), 1, Color.BLUE, root);
+        }
+        drawLine(playerLine, Main.player.getPosX(), Main.player.getPosY(), Main.player.getPosX() + 50 * Math.cos(Main.player.getAngle()), Main.player.getPosY() + 50 * Math.sin(Main.player.getAngle()), 1, Color.RED, root);
+
+
+    }
+
+    public void draw3D() {
+
+        root.getChildren().clear();
 
         for(int i = 0; i < 90; i++) {
             lines[i] = new Line();
-            drawLine(lines[i], Main.player.getPosX(), Main.player.getPosY(), Main.rays[i].getEndX(), Main.rays[i].getEndY(), 1, Color.RED, root);
+            if(Main.rays[i] != null){
+                double startX = i * 11 + 600.5;
+                double startY = 640 / 2 - (64 * 640 / Main.rays[i].getLength() / 2);
+                double endX = startX;
+                double endY = 640 / 2 + (64 * 640 / Main.rays[i].getLength() / 2);
+
+                drawLine(lines[i], startX, startY, endX, endY, 11, Color.WHITE, root);
+                Main.rays[i] = null;
+            }
         }
-
-
-//        for(int i = 0; i < 90; i++) {
-//            lines[i] = new Line();
-//            if(Main.rays[i] != null){
-//                double startX = i * 11 + 0.5;
-//                double startY = 640 / 2 - (64 * 640 / Main.rays[i].getLength() / 2);
-//                double endX = startX;
-//                double endY = 640 / 2 + (64 * 640 / Main.rays[i].getLength() / 2);
-//
-//                drawLine(lines[i], startX, startY, endX, endY, 11, Color.WHITE, root);
-//                Main.rays[i] = null;
-//            }
-//        }
     }
 
     public void drawRect(Rectangle rect, double x, double y, double width, double height, int state, Group root) {
@@ -124,5 +146,12 @@ public class Display {
     line.setStrokeWidth(width);
     line.setStroke(color);
     root.getChildren().add(line);
+    }
+
+    public int getWIDTH() {
+        return WIDTH;
+    }
+    public int getHEIGHT() {
+        return HEIGHT;
     }
 }

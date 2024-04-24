@@ -1,31 +1,27 @@
 package net.bilaljh.fubar;
 
-import javafx.scene.input.KeyCode;
-
 public class Player {
 
-    private double posX;
-    private double posY;
-    private double angle;
+    private double posX, posY, angle, deltaX, deltaY;
 
 
     public Player(double posX, double posY, double angle) {
         this.posX = posX;
         this.posY = posY;
-        this.angle = angle;
+        this.angle = angle; //In Bogenmaß!
     }
 
     public void moveForward() {
-        double deltaX = Math.cos(Math.toRadians(angle));
-        double deltaY = Math.sin(Math.toRadians(angle));
+        deltaX = Math.cos(angle);
+        deltaY = Math.sin(angle);
         posX += deltaX * 10;
         posY += deltaY * 10;
     }
     public void moveBackward() {
-        double deltaX = Math.cos(Math.toRadians(angle));
-        double deltaY = Math.sin(Math.toRadians(angle));
-        posX -= deltaX * 2.5;
-        posY -= deltaY * 2.5;
+        deltaX = Math.cos(angle);
+        deltaY = Math.sin(angle);
+        posX -= deltaX * 5;
+        posY -= deltaY * 5;
     }
 
     public double getPosX() {

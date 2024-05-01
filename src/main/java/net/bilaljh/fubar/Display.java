@@ -3,54 +3,89 @@ package net.bilaljh.fubar;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.stage.Screen;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
 
 public class Display {
 
-    Stage primaryStage;
-    Group root;
-    Scene primaryScene;
+    Stage primaryStage, mapStage;
+    Group root, mapRoot;
+    Scene primaryScene, mapScene;
 
+    Player player;
     Line playerLine;
     Line[] lines;
+    Line[] blackLines;
+    Rectangle playerRect;
+    Rectangle floor;
     Rectangle[] rectangles;
-    Rectangle player = new Rectangle();
+    Text life1, life2;
+    Image playerImage, hud;
+    ImageView playerImageView, hudView;
 
-    private double currentAngle;
-    private final int WIDTH = 2560;
-    private final int HEIGHT = 1440;
+    private final int WIDTH = 1110;
+    private final int HEIGHT = 640;
+    private final int GAME_WIDTH = 960;
+
 
     public Display() {
+        player = Main.player;
+        playerRect = new Rectangle();
+        floor = new Rectangle();
+        playerLine = new Line();
+        lines = new Line[Main.rayNumber];
+        blackLines = new Line[Main.rayNumber];
+        life1 = new Text();
+        life2 = new Text();
+
+        // -- Hauptfenster --
         primaryStage = new Stage();
         root = new Group();
-        primaryScene = new Scene(root, Color.BLACK);
-        playerLine = new Line();
-        lines = new Line[90];
+        primaryScene = new Scene(root, Color.rgb(91,0,0));
 
-
-        //Image icon = new Image("LS00.png");
-
-        //primaryStage.getIcons().add(icon);
-        primaryStage.setTitle("Fubar! - PreAlpha v0.1");
-        //primaryStage.setWidth(990);
+        primaryStage.setTitle("Fubar! - PreAlpha v0.2");
         primaryStage.setWidth(WIDTH);
         primaryStage.setHeight(HEIGHT);
+        primaryStage.setResizable(true);
+        primaryStage.setX(Screen.getPrimary().getBounds().getWidth() / 2 + 500);
+        primaryStage.setY(Screen.getPrimary().getBounds().getWidth() / 2);
 
-//        primaryStage.setWidth(1500);
-//        primaryStage.setHeight(640);
-        primaryStage.setResizable(false);
         //primaryStage.initStyle(StageStyle.UNDECORATED);
+
+
+        // ---- 2D Ansicht ----
+        mapStage = new Stage();
+        mapRoot = new Group();
+        mapScene = new Scene(mapRoot, Color.BLACK);
+
+        mapStage.setTitle("Fubar! - PreAlpha v0.2 - Map");
+        mapStage.setWidth(GAME_WIDTH);
+        mapStage.setHeight(HEIGHT);
+        mapStage.setResizable(true);
+        mapStage.setX(Screen.getScreens().get(1).getBounds().getWidth() / 2 - 300);
+        mapStage.setY(Screen.getScreens().get(1).getBounds().getWidth() / 2);
+
+
 
 
         primaryStage.setScene(primaryScene);
         primaryStage.show();
+
+        mapStage.setScene(mapScene);
+        mapStage.show();
 
         startUpdateTimer();
 
@@ -71,85 +106,182 @@ public class Display {
 
     public void draw() {
         draw2D();
-        //draw3D();
+        draw3D();
+        drawHUD();
     }
 
     public void draw2D() {
 
-
         rectangles = new Rectangle[1024];
-        root.getChildren().clear();
+        mapRoot.getChildren().clear();
         double posX = 0;
         double posY = 0;
         int counter = 0;
 
-        for(int i = 0; i <= Main.map.getMapBorderX(); i++) {
-            for(int ii = 0; ii <= Main.map.getMapBorderY(); ii++) {
+        for(int i = 0; i < Main.map.getMapBorderX(); i++) {
+            for(int ii = 0; ii < Main.map.getMapBorderY(); ii++) {
                 rectangles[counter] = new Rectangle();
-                drawRect(rectangles[counter], posX, posY, 64, 64, Main.map.map[i][ii], root);
-                posY += 64 + 1;
+                drawRect(rectangles[counter], posX, posY, 64, 64, Main.map.map[i][ii], mapRoot);
+                posY += 64;
                 counter++;
-                //System.out.println(counter);
             }
-            posX += 64 + 1;
+            posX += 64;
             posY = 0;
         }
 
-        drawRect(player, Main.player.getPosX() - 10, Main.player.getPosY() - 10, 20, 20, 6, root);
-        for(int i = 0; i < 90; i++) {
+        drawRect(playerRect, Main.player.getPosX() - 10, Main.player.getPosY() - 10, 20, 20, 6, mapRoot);
+        for(int i = 0; i < Main.rayNumber; i++) {
             lines[i] = new Line();
-            drawLine(lines[i], Main.player.getPosX(), Main.player.getPosY(), Main.rays[i].getEndX(), Main.rays[i].getEndY(), 1, Color.BLUE, root);
+            drawLine(lines[i], Main.player.getPosX(), Main.player.getPosY(), Main.rays[i].getEndX(), Main.rays[i].getEndY(), 1, Main.rays[i].getColor(), mapRoot);
         }
-        drawLine(playerLine, Main.player.getPosX(), Main.player.getPosY(), Main.player.getPosX() + 50 * Math.cos(Main.player.getAngle()), Main.player.getPosY() + 50 * Math.sin(Main.player.getAngle()), 1, Color.RED, root);
-
-
+        drawLine(playerLine, Main.player.getPosX(), Main.player.getPosY(), Main.player.getPosX() + 50 * Math.cos(Main.player.getAngle()), Main.player.getPosY() + 50 * Math.sin(Main.player.getAngle()), 1, Color.RED, mapRoot);
     }
 
     public void draw3D() {
-
         root.getChildren().clear();
 
-        for(int i = 0; i < 90; i++) {
+        drawRect(floor, 0, (int) (HEIGHT / 2), GAME_WIDTH, HEIGHT, Color.rgb(0,0,94), root);
+        for(int i = 0; i < Main.rayNumber; i++) {
+            blackLines[i] = new Line();
             lines[i] = new Line();
-            if(Main.rays[i] != null){
-                double startX = i * 11 + 600.5;
-                double startY = 640 / 2 - (64 * 640 / Main.rays[i].getLength() / 2);
+            if(Main.rays[i] != null) {
+                Ray ray = Main.rays[i];
+                double rayLength = ray.getLength();
+                double startX = i * 3 + 1;
                 double endX = startX;
-                double endY = 640 / 2 + (64 * 640 / Main.rays[i].getLength() / 2);
 
-                drawLine(lines[i], startX, startY, endX, endY, 11, Color.WHITE, root);
-                Main.rays[i] = null;
+                // Höhe der Linie relativ zur Länge des Strahls berechnen
+                double lineHeight = (64 * HEIGHT) / rayLength;
+
+                // Sicherstellen, dass die Linie nicht über die Höhe des Bildschirms hinausgeht
+                if(lineHeight > HEIGHT) {
+                    lineHeight = HEIGHT;
+                }
+
+                // Vertikalen Offset berechnen, um die Linie zentriert auf dem Bildschirm zu positionieren
+                double offset = (HEIGHT - lineHeight) / 2;
+
+                // Start- und Endpunkte der Linie berechnen
+                double startY = offset;
+                double endY = HEIGHT - offset;
+
+                // Linie zeichnen
+                drawLine(blackLines[i], startX, startY + 1, endX, endY - 1, 4, Color.BLACK, root);
+                drawLine(lines[i], startX, startY, endX, endY, 3, ray.getColor(), root);
             }
         }
     }
 
-    public void drawRect(Rectangle rect, double x, double y, double width, double height, int state, Group root) {
+    public void drawHUD() {
+        int middleX = (int) (GAME_WIDTH + ((WIDTH - GAME_WIDTH) / 2));
+
+        drawPicture(hud, "file:src/resource/hud.png", hudView, middleX - 75, 0, root);
+
+        // -- Lebensanzeige --
+        if(player.getLife() == 100) {
+            drawText(life1, GAME_WIDTH + 25, (int) (HEIGHT / 5), String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
+            drawText(life2, GAME_WIDTH + 25, (int) (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
+        } else if(player.getLife() < 10 && player.getLife() >= 0) {
+            drawText(life1, GAME_WIDTH + 57, (int) (HEIGHT / 5), String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
+            drawText(life2, GAME_WIDTH + 57, (int) (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
+        } else {
+            drawText(life1, GAME_WIDTH + 40, (int) (HEIGHT / 5), String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
+            drawText(life2, GAME_WIDTH + 40, (int) (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
+        }
+
+        drawPicture(playerImage, getPlayerImage(player), playerImageView, middleX - 50, HEIGHT / 2 - 52, root);
+    }
+
+    public void drawRect(Rectangle rect, double x, double y, double width, double height, int color, Group group) {
         rect.setX(x);
         rect.setY(y);
         rect.setWidth(width);
         rect.setHeight(height);
-        if(state == 6) {
-            rect.setFill(Color.ORANGE);
-        } if(state == 1) {
-            rect.setFill(Color.WHITE);
-        } if(state == 0) {
-            rect.setFill(Color.BLACK);
+        switch(color) {
+            case 1:
+                rect.setFill(Color.WHITE);
+                break;
+            case 2:
+                rect.setFill(Color.RED);
+                break;
+            case 3:
+                rect.setFill(Color.BLUE);
+                break;
+            case 4:
+                rect.setFill(Color.GREEN);
+                break;
+            case 5:
+                rect.setFill(Color.YELLOW);
+                break;
+            case 6:
+                rect.setFill(Color.PURPLE);
+                break;
+            case 7:
+                rect.setFill(Color.ORANGE);
+                break;
+            default:
+                rect.setFill(Color.BLACK);
+                break;
         }
-        root.getChildren().add(rect);
+        group.getChildren().add(rect);
     }
 
-    public void drawLine (Line line,double startX, double startY, double endX, double endY, double width, Color color, Group root){
+    public void drawRect(Rectangle rect, double x, double y, double width, double height, Color color, Group group) {
+        rect.setX(x);
+        rect.setY(y);
+        rect.setWidth(width);
+        rect.setHeight(height);
+        rect.setFill(color);
+        group.getChildren().add(rect);
+    }
+
+    public void drawLine (Line line,double startX, double startY, double endX, double endY, double width, Color color, Group group){
     line.setStartX(startX);
     line.setStartY(startY);
     line.setEndX(endX);
     line.setEndY(endY);
     line.setStrokeWidth(width);
     line.setStroke(color);
-    root.getChildren().add(line);
+    group.getChildren().add(line);
     }
 
-    public int getWIDTH() {
-        return WIDTH;
+    public void drawText(Text texts, double x, double y, String string, int size, Color color, Group group) {
+        texts.setX(x);
+        texts.setY(y);
+        texts.setText(string);
+        texts.setFont(Font.loadFont("file:src/resource/Doom2016Text-GOlBq.ttf", size));
+        texts.setFill(color);
+
+        group.getChildren().add(texts);
+    }
+
+    public void drawPicture(Image image, String file, ImageView view, double x, double y, Group group) {
+        image = new Image(file);
+        view = new ImageView(image);
+        view.setX(x);
+        view.setY(y);
+
+        group.getChildren().add(view);
+    }
+
+    public String getPlayerImage(Player player) {
+        if(player.getLife() >= 80) {
+            return "file:src/resource/STFFull.png";
+        } else if(player.getLife() >= 60) {
+            return "file:src/resource/STF2.png";
+        } else if(player.getLife() >= 40) {
+            return "file:src/resource/STF3.png";
+        } else if(player.getLife() >= 20) {
+            return "file:src/resource/STF4.png";
+        } else if(player.getLife() >= 1) {
+            return "file:src/resource/STF5.png";
+        } else {
+            return "file:src/resource/STFDead.png";
+        }
+    }
+
+    public int getGAME_WIDTH() {
+        return GAME_WIDTH;
     }
     public int getHEIGHT() {
         return HEIGHT;

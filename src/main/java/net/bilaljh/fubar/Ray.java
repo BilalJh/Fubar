@@ -1,18 +1,18 @@
 package net.bilaljh.fubar;
 
-public class Ray {
-    private double originX;
-    private double originY;
-    private double endX;
-    private double endY;
-    private double length;
+import javafx.scene.paint.Color;
 
-    public Ray(double originX, double originY, double endX, double endY, double length) {
+public class Ray {
+    private double originX, originY, endX, endY, length;
+    private Color color;
+
+    public Ray(double originX, double originY, double endX, double endY, double length, Color color) {
         this.originX = originX;
         this.originY = originY;
         this.endX = endX;
         this.endY = endY;
         this.length = length;
+        this.color = color;
     }
 
     public double getOriginX() {
@@ -35,5 +35,11 @@ public class Ray {
 
     public double getEndY() {
         return endY;
+    }
+    public Color getColor() {
+        return color;
+    }
+    public void setColor(Color color) {
+        this.color = color;
     }
 }

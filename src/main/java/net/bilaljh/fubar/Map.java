@@ -13,6 +13,8 @@ public class Map {
     public Map() {
         mapBorderX = randomizer.nextInt(24) + 8;
         mapBorderY = randomizer.nextInt(24) + 8;
+//        mapBorderX = 8;
+//        mapBorderY = 8;
         borderAverage = ((mapBorderX + mapBorderY));
         map = new int[mapBorderX + 1][mapBorderY + 1];
         spawnX = (int)(mapBorderX / 2);
@@ -26,11 +28,11 @@ public class Map {
 
 //        map = new int[][] {
 //                {1, 1, 1, 1, 1, 1, 1, 1},
-//                {1, 0, 0, 1, 0, 0, 0, 1},
-//                {1, 0, 0, 1, 0, 0, 0, 1},
-//                {1, 0, 0, 1, 0, 0, 0, 1},
-//                {1, 0, 0, 1, 0, 0, 0, 1},
-//                {1, 0, 0, 0, 0, 1, 0, 1},
+//                {2, 0, 2, 0, 0, 0, 0, 1},
+//                {3, 0, 2, 0, 0, 0, 0, 1},
+//                {4, 0, 3, 0, 0, 0, 0, 1},
+//                {5, 0, 0, 0, 0, 0, 0, 1},
+//                {6, 0, 0, 0, 0, 6, 0, 1},
 //                {1, 0, 0, 0, 0, 0, 0, 1},
 //                {1, 1, 1, 1, 1, 1, 1, 1,},
 //        };
@@ -43,12 +45,14 @@ public class Map {
             }
         }
         for(int i = 0; i <= mapBorderX; i++) {
-            map[i][0] = 1;
-            map[i][mapBorderY] = 1;
+            int random = randomizer.nextInt(9) + 1;
+            map[i][0] = randomizer.nextInt(6) + 1;
+            map[i][mapBorderY] = randomizer.nextInt(6) + 1;
         }
         for(int i = 0; i < mapBorderY; i++) {
-            map[0][i] = 1;
-            map[mapBorderX][i] = 1;
+            int random = randomizer.nextInt(9) + 1;
+            map[0][i] = randomizer.nextInt(6) + 1;
+            map[mapBorderX][i] = randomizer.nextInt(6) + 1;
         }
     }
 
@@ -56,7 +60,7 @@ public class Map {
         for(int i = 0; i < borderAverage; i++) {
             int randX = randomizer.nextInt(mapBorderX);
             int randY = randomizer.nextInt(mapBorderY);
-            map[randX][randY] = 1;
+            map[randX][randY] = randomizer.nextInt(6) + 1;
         }
     }
 

@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Main-Class: net.bilaljh.fubar.Main
+Class-Path: javafx-base-21-linux.jar fxgl-scene-17.3.jar javafx-graphics
+ -21-linux.jar javafx-base-21.jar ikonli-core-12.3.1.jar storage-4.0.17.
+ jar annotations-13.0.jar jackson-annotations-2.14.2.jar kotlin-stdlib-c
+ ommon-1.8.10.jar formsfx-core-11.6.0.jar javafx-media-21-linux.jar java
+ fx-swt.jar javafx.web.jar javafx.base.jar javafx.fxml.jar javafx.media.
+ jar javafx.swing.jar javafx.controls.jar javafx.graphics.jar javafx-con
+ trols-21.jar javafx-media-21.jar audio-4.0.17.jar javafx-fxml-21.jar ik
+ onli-javafx-12.3.1.jar bootstrapfx-core-0.4.0.jar fxgl-17.3.jar lifecyc
+ le-4.0.17.jar validatorfx-0.4.0.jar jackson-databind-2.14.2.jar fxgl-en
+ tity-17.3.jar fxgl-io-17.3.jar util-4.0.17.jar javafx-controls-21-linux
+ .jar javafx-swing-21-linux.jar javafx-swing-21.jar javafx-web-21.jar ja
+ vafx-graphics-21.jar javafx-fxml-21-linux.jar javafx-web-21-linux.jar f
+ xgl-gameplay-17.3.jar jackson-core-2.14.2.jar controlsfx-11.1.2.jar fxg
+ l-core-17.3.jar kotlin-stdlib-1.8.10.jar tilesfx-11.48.jar
+

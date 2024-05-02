@@ -10,6 +10,7 @@ public class Main extends Application {
     public static Raycaster engine;
     public static Player player;
     public static Display display;
+    public static Face face;
     public static Map map;
 
     public static int rayNumber = 360;
@@ -28,6 +29,7 @@ public class Main extends Application {
         engine = new Raycaster();
         player = new Player(map.getSpawnX() * 64, map.getSpawnY() * 64, 0, 100);
         display = new Display();
+        face = new Face();
 
         controls();
         Platform.runLater(() -> Main.display.draw());
@@ -39,6 +41,7 @@ public class Main extends Application {
             switch(keyCode) {
                 case W:
                     player.move(10);
+                    player.setLife(player.getLife()-1);
                     break;
                 case A:
                     player.setAngle(player.getAngle()-Math.toRadians(15));

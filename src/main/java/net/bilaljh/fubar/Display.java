@@ -60,7 +60,7 @@ public class Display {
         primaryStage.setWidth(WIDTH);
         primaryStage.setHeight(HEIGHT);
         primaryStage.setResizable(true);
-        primaryStage.setX(Screen.getPrimary().getBounds().getWidth() / 2 + 500);
+        primaryStage.setX(Screen.getPrimary().getBounds().getWidth() / 2);
         primaryStage.setY(Screen.getPrimary().getBounds().getWidth() / 2);
 
         //primaryStage.initStyle(StageStyle.UNDECORATED);
@@ -75,8 +75,8 @@ public class Display {
         mapStage.setWidth(GAME_WIDTH);
         mapStage.setHeight(HEIGHT);
         mapStage.setResizable(true);
-        mapStage.setX(Screen.getScreens().get(1).getBounds().getWidth() / 2 - 300);
-        mapStage.setY(Screen.getScreens().get(1).getBounds().getWidth() / 2);
+        mapStage.setX(Screen.getScreens().get(0).getBounds().getWidth() / 2 - 300);
+        mapStage.setY(Screen.getScreens().get(0).getBounds().getWidth() / 2);
 
 
 
@@ -188,8 +188,7 @@ public class Display {
             drawText(life1, GAME_WIDTH + 40, (int) (HEIGHT / 5), String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
             drawText(life2, GAME_WIDTH + 40, (int) (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
         }
-
-        drawPicture(playerImage, getPlayerImage(player), playerImageView, middleX - 50, HEIGHT / 2 - 52, root);
+            Main.face.idle();
     }
 
     public void drawRect(Rectangle rect, double x, double y, double width, double height, int color, Group group) {
@@ -264,26 +263,31 @@ public class Display {
         group.getChildren().add(view);
     }
 
+    /*
     public String getPlayerImage(Player player) {
         if(player.getLife() >= 80) {
-            return "file:src/resource/STFFull.png";
+            return "file:src/resource/Standard/STFST01.png";
         } else if(player.getLife() >= 60) {
-            return "file:src/resource/STF2.png";
+            return "file:src/resource/Standard/STFST11.png";
         } else if(player.getLife() >= 40) {
-            return "file:src/resource/STF3.png";
+            return "file:src/resource/Standard/STFST21.png";
         } else if(player.getLife() >= 20) {
-            return "file:src/resource/STF4.png";
+            return "file:src/resource/Standard/STFST31.png";
         } else if(player.getLife() >= 1) {
-            return "file:src/resource/STF5.png";
+            return "file:src/resource/Standard/STFST41.png";
         } else {
-            return "file:src/resource/STFDead.png";
+            return "file:src/resource/Standard/STFST51.png";
         }
-    }
+    } */
 
     public int getGAME_WIDTH() {
         return GAME_WIDTH;
     }
     public int getHEIGHT() {
         return HEIGHT;
+    }
+
+    public int getWIDTH() {
+        return WIDTH;
     }
 }

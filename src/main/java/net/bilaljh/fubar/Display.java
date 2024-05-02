@@ -59,9 +59,9 @@ public class Display {
         primaryStage.setTitle("Fubar! - PreAlpha v0.2");
         primaryStage.setWidth(WIDTH);
         primaryStage.setHeight(HEIGHT);
-        primaryStage.setResizable(true);
-        primaryStage.setX(Screen.getPrimary().getBounds().getWidth() / 2);
-        primaryStage.setY(Screen.getPrimary().getBounds().getWidth() / 2);
+        primaryStage.setResizable(false);
+        //primaryStage.setX(Screen.getPrimary().getBounds().getWidth() / 2);
+        //primaryStage.setY(Screen.getPrimary().getBounds().getWidth() / 2);
 
         //primaryStage.initStyle(StageStyle.UNDECORATED);
 
@@ -75,8 +75,8 @@ public class Display {
         mapStage.setWidth(GAME_WIDTH);
         mapStage.setHeight(HEIGHT);
         mapStage.setResizable(true);
-        mapStage.setX(Screen.getScreens().get(0).getBounds().getWidth() / 2 - 300);
-        mapStage.setY(Screen.getScreens().get(0).getBounds().getWidth() / 2);
+        //mapStage.setX(Screen.getScreens().get(0).getBounds().getWidth() / 2 - 300);
+        //mapStage.setY(Screen.getScreens().get(0).getBounds().getWidth() / 2);
 
 
 
@@ -85,7 +85,7 @@ public class Display {
         primaryStage.show();
 
         mapStage.setScene(mapScene);
-        mapStage.show();
+        //mapStage.show();
 
         startUpdateTimer();
 

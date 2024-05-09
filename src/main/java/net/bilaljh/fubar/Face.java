@@ -3,7 +3,6 @@ package net.bilaljh.fubar;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import java.util.Timer;
 
 public class Face {
 
@@ -79,10 +78,9 @@ public class Face {
     public String current;
     private Image image;
     private ImageView imageView;
-    private int middleX;
-    private long lastMark;
+    private final int middleX = (int) (Main.display.getGAME_WIDTH() + ((Main.display.getWIDTH() - Main.display.getGAME_WIDTH()) / 2));
+
     public Face() {
-            middleX = (int) (Main.display.getGAME_WIDTH() + ((Main.display.getWIDTH() - Main.display.getGAME_WIDTH()) / 2));
             current = standardSheet[0][1];
     }
 
@@ -105,28 +103,12 @@ public class Face {
 
 
         drawFace(standardSheet[bloodLevel][1]);
-        mark();
-
-        if(millisElapsed() > 1000) {
-            drawFace(standardSheet[bloodLevel][0]);
-            System.out.println(bloodLevel + "." + 0);
-            mark();
-        }
-        if(millisElapsed() > 1000) {
-            drawFace(standardSheet[bloodLevel][2]);
-            System.out.println(bloodLevel + "." + 2);
-            mark();
-        }
-        if(millisElapsed() > 1000) {
-            drawFace(standardSheet[bloodLevel][1]);
-            System.out.println(bloodLevel + "." + 1);
-            mark();
-        }
     }
 
     public void drawFace(String currentString) {
         drawImage(image, currentString, imageView, middleX - 50, Main.display.getHEIGHT() / 2 - 52, Main.display.root);
     }
+
     public void drawImage(Image image, String file, ImageView view, double x, double y, Group group) {
         image = new Image(file);
         view = new ImageView(image);
@@ -134,12 +116,5 @@ public class Face {
         view.setY(y);
 
         group.getChildren().add(view);
-    }
-
-    public void mark() {
-        lastMark = System.currentTimeMillis();
-    }
-    public long millisElapsed() {
-        return System.currentTimeMillis() - lastMark;
     }
 }

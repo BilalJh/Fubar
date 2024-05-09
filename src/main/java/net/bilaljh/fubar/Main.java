@@ -41,7 +41,7 @@ public class Main extends Application {
             switch(keyCode) {
                 case W:
                     player.move(10);
-                    player.setLife(player.getLife()-1);
+                    //player.setLife(player.getLife()-1);
                     break;
                 case A:
                     player.setAngle(player.getAngle()-Math.toRadians(15));

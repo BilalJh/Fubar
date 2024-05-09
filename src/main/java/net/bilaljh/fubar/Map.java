@@ -4,27 +4,35 @@ import java.util.Random;
 
 public class Map {
 
-
-    private Random randomizer = new Random();
-    private int mapBorderX, mapBorderY, borderAverage, spawnX, spawnY;
+    private Random randomizer;
+    private int mapBorderX, mapBorderY, borderAverage, playerSpawnX, playerSpawnY, lostSoulSpawnX, lostSoulSpawnY;
 
     public int[][] map;
 
     public Map() {
+        randomizer = new Random();
+
         mapBorderX = randomizer.nextInt(24) + 8;
         mapBorderY = randomizer.nextInt(24) + 8;
 //        mapBorderX = 8;
 //        mapBorderY = 8;
         borderAverage = ((mapBorderX + mapBorderY));
         map = new int[mapBorderX + 1][mapBorderY + 1];
-        spawnX = (int)(mapBorderX / 2);
-        spawnY = (int)(mapBorderY / 2);
 
-        System.out.println(mapBorderX + ", " + mapBorderY);
+        lostSoulSpawnX = randomizer.nextInt(mapBorderX) + 2;
+        lostSoulSpawnY = randomizer.nextInt(mapBorderY) + 2;
+        System.out.println("lostSoulSpawnX: " + lostSoulSpawnX + ", lostSoulSpawnY: " + lostSoulSpawnY);
+        playerSpawnX = mapBorderX / 2;
+        playerSpawnY = mapBorderY / 2;
+
+        if(Main.DEVELOPER_MODE) {
+            System.out.println(mapBorderX + ", " + mapBorderY);
+        }
 
         createWorld();
         generateObstacles();
-        generateSpawn(spawnX, spawnY);
+        generateSpawn(playerSpawnX, playerSpawnY);
+        generateSpawn(lostSoulSpawnX, lostSoulSpawnY);
 
 //        map = new int[][] {
 //                {1, 1, 1, 1, 1, 1, 1, 1},
@@ -81,10 +89,10 @@ public class Map {
     public int getBorderAverage() {
         return borderAverage;
     }
-    public int getSpawnX() {
-        return spawnX;
+    public int getPlayerSpawnX() {
+        return playerSpawnX;
     }
-    public int getSpawnY() {
-        return spawnY;
+    public int getPlayerSpawnY() {
+        return playerSpawnY;
     }
 }

@@ -2,8 +2,9 @@ package net.bilaljh.fubar;
 
 public class Actor {
 
-    public int cellX, cellY, life, mapX, mapY;
+    public int cellX, cellY, life, mapX, mapY, score;
     public double angle, posX, posY, angleX, angleY, deltaDistX, deltaDistY, endX, endY;
+    public Ray shot;
 
 
     public void move(double offset) {
@@ -13,7 +14,7 @@ public class Actor {
         deltaDistX = Math.sqrt(1 + (angleY * angleY) / (angleX * angleX));
         deltaDistY = Math.sqrt(1 + (angleX * angleX) / (angleY * angleY));
 
-        if(deltaDistX < deltaDistY) {
+        if (deltaDistX < deltaDistY) {
             endX = getPosX() + deltaDistX * angleX;
             endY = getPosY() + deltaDistX * angleX;
         } else {
@@ -24,74 +25,15 @@ public class Actor {
         mapX = (int) (endX / 64);
         mapY = (int) (endY / 64);
 
-        if(Main.map.map[(int) ((posX + angleX * offset) / 64)][(int) ((posY + angleY * offset) / 64)] == 0) {
+        if (Main.map.map[(int) ((posX + angleX * offset) / 64)][(int) ((posY + angleY * offset) / 64)] == 0) {
             posX += angleX * offset;
             posY += angleY * offset;
             cellX = (int) (posX / 64);
             cellY = (int) (posY / 64);
         }
-
-//        if(endX == Main.lostSoul.getPosX() && endY == Main.lostSoul.getPosY()) {
-//
-//        }
     }
 
-//    public void move(double offset) {
-//        if(!isColliding(offset)) {
-//            deltaX = Math.cos(angle);
-//            deltaY = Math.sin(angle);
-//            posX += deltaX * offset;
-//            posY += deltaY * offset;
-//            cellX = (int) (posX / 64);
-//            cellY = (int) (posY / 64);
-//        }
-//    }
 
-    public void setLocation(double posX, double posY) {
-        this.posX = posX;
-        this.posY = posY;
-        this.cellX = (int) (this.posX / 64);
-        this.cellY = (int) (this.posY / 64);
-        System.out.println("posX: " + this.posX + " posY: " + this.posY);
-    }
-
-//    public boolean isColliding() {
-//        if(cellX > 0 || cellY > 0) {
-//            return false;
-//        } else {
-//            return true;
-//        }
-//    }
-//    public boolean isColliding(double offset) {
-//        if(Main.map.map[(int) ((posX + offset) / 64)][(int) ((posY + offset) / 64)] == 0) {
-//            return false;
-//        } else {
-//            return true;
-//        }
-//    }
-//    public boolean isColliding(Actor other) {
-//        if(posX == other.posX && posY == other.posY) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
-
-
-    public int getCellX() {
-        return cellX;
-    }
-    public void setCellX(int cellX) {
-        this.cellX = cellX;
-        this.posX = cellX * 64;
-    }
-    public int getCellY() {
-        return cellY;
-    }
-    public void setCellY(int cellY) {
-        this.cellY = cellY;
-        this.posY = cellY * 64;
-    }
     public int getLife() {
         return life;
     }
@@ -117,5 +59,11 @@ public class Actor {
     public void setPosY(int posY) {
         this.posY = posY;
         this.cellY = posY / 64;
+    }
+    public int getScore() {
+        return score;
+    }
+    public void setScore(int score) {
+        this.score = score;
     }
 }

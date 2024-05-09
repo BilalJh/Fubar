@@ -13,11 +13,8 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.Screen;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.Timer;
 import java.util.TimerTask;
-
 
 public class Display {
 
@@ -26,43 +23,49 @@ public class Display {
     Scene primaryScene, mapScene;
 
     Player player;
+    LostSoul lostSoul;
     Line playerLine;
     Line[] lines;
     Line[] blackLines;
-    Rectangle playerRect;
-    Rectangle floor;
+    Rectangle playerRect, enemyRect, floor;
     Rectangle[] rectangles;
     Text life1, life2;
-    Image playerImage, hud;
-    ImageView playerImageView, hudView;
+    Image lostSoulImage;
+    Ray enemyRay;
 
-    private final int WIDTH = 1110;
-    private final int HEIGHT = 640;
-    private final int GAME_WIDTH = 960;
+    double enemyX;
+
+    private final int WIDTH = Main.SCREEN_WIDTH;
+    private final int HEIGHT = Main.SCREEN_HEIGHT;
+    private final int GAME_WIDTH = Main.GAME_WIDTH;
+    private final int middleX = GAME_WIDTH + ((WIDTH - GAME_WIDTH) / 2);
 
 
     public Display() {
         player = Main.player;
+        lostSoul = Main.lostSoul;
         playerRect = new Rectangle();
+        enemyRect = new Rectangle();
         floor = new Rectangle();
         playerLine = new Line();
-        lines = new Line[Main.rayNumber];
-        blackLines = new Line[Main.rayNumber];
+        lines = new Line[Main.RAY_NUMBER];
+        blackLines = new Line[Main.RAY_NUMBER];
         life1 = new Text();
         life2 = new Text();
+        lostSoulImage = new Image("file:src/resource/LS00.png");
 
         // -- Hauptfenster --
         primaryStage = new Stage();
         root = new Group();
         primaryScene = new Scene(root, Color.rgb(91,0,0));
 
+        primaryStage.getIcons().add(lostSoulImage);
         primaryStage.setTitle("Fubar! - PreAlpha v0.2");
         primaryStage.setWidth(WIDTH);
         primaryStage.setHeight(HEIGHT);
         primaryStage.setResizable(false);
-        //primaryStage.setX(Screen.getPrimary().getBounds().getWidth() / 2);
-        //primaryStage.setY(Screen.getPrimary().getBounds().getWidth() / 2);
-
+        primaryStage.setX(Screen.getPrimary().getBounds().getWidth() / 2);
+        primaryStage.setY(Screen.getPrimary().getBounds().getWidth() / 2);
         //primaryStage.initStyle(StageStyle.UNDECORATED);
 
 
@@ -71,7 +74,8 @@ public class Display {
         mapRoot = new Group();
         mapScene = new Scene(mapRoot, Color.BLACK);
 
-        mapStage.setTitle("Fubar! - PreAlpha v0.2 - Map");
+        mapStage.getIcons().add(lostSoulImage);
+        mapStage.setTitle("Fubar! - PreAlpha v0.3 - Map");
         mapStage.setWidth(GAME_WIDTH);
         mapStage.setHeight(HEIGHT);
         mapStage.setResizable(true);
@@ -79,13 +83,11 @@ public class Display {
         //mapStage.setY(Screen.getScreens().get(0).getBounds().getWidth() / 2);
 
 
-
-
         primaryStage.setScene(primaryScene);
         primaryStage.show();
 
         mapStage.setScene(mapScene);
-        //mapStage.show();
+        mapStage.show();
 
         startUpdateTimer();
 
@@ -129,19 +131,29 @@ public class Display {
             posY = 0;
         }
 
-        drawRect(playerRect, Main.player.getPosX() - 10, Main.player.getPosY() - 10, 20, 20, 6, mapRoot);
-        for(int i = 0; i < Main.rayNumber; i++) {
+        drawRect(playerRect, player.getPosX() - 10, player.getPosY() - 10, 20, 20, 6, mapRoot);
+        drawRect(enemyRect, lostSoul.getPosX() - 10, lostSoul.getPosY() - 10, 20, 20, 6, mapRoot);
+
+        for(int i = 0; i < Main.RAY_NUMBER; i++) {
             lines[i] = new Line();
-            drawLine(lines[i], Main.player.getPosX(), Main.player.getPosY(), Main.rays[i].getEndX(), Main.rays[i].getEndY(), 1, Main.rays[i].getColor(), mapRoot);
+            Color rayColor;
+            if(Main.rays[i].isHit()) {
+                rayColor = Color.rgb(0, 255, 0);
+            } else {
+                rayColor = Main.rays[i].getColor();
+            }
+            drawLine(lines[i], Main.player.getPosX(), Main.player.getPosY(), Main.rays[i].getEndX(), Main.rays[i].getEndY(), 1, rayColor, mapRoot);
         }
         drawLine(playerLine, Main.player.getPosX(), Main.player.getPosY(), Main.player.getPosX() + 50 * Math.cos(Main.player.getAngle()), Main.player.getPosY() + 50 * Math.sin(Main.player.getAngle()), 1, Color.RED, mapRoot);
     }
 
     public void draw3D() {
+
+
         root.getChildren().clear();
 
-        drawRect(floor, 0, (int) (HEIGHT / 2), GAME_WIDTH, HEIGHT, Color.rgb(0,0,94), root);
-        for(int i = 0; i < Main.rayNumber; i++) {
+        drawRect(floor, 0, (double) HEIGHT / 2, GAME_WIDTH, HEIGHT, Color.rgb(0,0,94), root);
+        for(int i = 0; i < Main.RAY_NUMBER; i++) {
             blackLines[i] = new Line();
             lines[i] = new Line();
             if(Main.rays[i] != null) {
@@ -168,27 +180,39 @@ public class Display {
                 // Linie zeichnen
                 drawLine(blackLines[i], startX, startY + 1, endX, endY - 1, 4, Color.BLACK, root);
                 drawLine(lines[i], startX, startY, endX, endY, 3, ray.getColor(), root);
+
+                if(ray.isHit()) {
+                    enemyRay = ray;
+                    enemyX = startX;
+                }
+            }
+        }
+        if(enemyRay != null) {
+            if(enemyRay.isHit()) {
+                Main.lostSoul.idle(enemyX, 300);
+                enemyRay = null;
             }
         }
     }
 
     public void drawHUD() {
-        int middleX = (int) (GAME_WIDTH + ((WIDTH - GAME_WIDTH) / 2));
-
-        drawPicture(hud, "file:src/resource/hud.png", hudView, middleX - 75, 0, root);
+        drawPicture("file:src/resource/Hud.png", middleX - 75, 0, root);
 
         // -- Lebensanzeige --
         if(player.getLife() == 100) {
-            drawText(life1, GAME_WIDTH + 25, (int) (HEIGHT / 5), String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
-            drawText(life2, GAME_WIDTH + 25, (int) (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
+            drawText(life1, GAME_WIDTH + 25, HEIGHT / 5, String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
+            drawText(life2, GAME_WIDTH + 25, (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
         } else if(player.getLife() < 10 && player.getLife() >= 0) {
-            drawText(life1, GAME_WIDTH + 57, (int) (HEIGHT / 5), String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
-            drawText(life2, GAME_WIDTH + 57, (int) (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
+            drawText(life1, GAME_WIDTH + 57, HEIGHT / 5, String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
+            drawText(life2, GAME_WIDTH + 57, (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
         } else {
-            drawText(life1, GAME_WIDTH + 40, (int) (HEIGHT / 5), String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
-            drawText(life2, GAME_WIDTH + 40, (int) (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
+            drawText(life1, GAME_WIDTH + 40, HEIGHT / 5, String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
+            drawText(life2, GAME_WIDTH + 40, (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
         }
-            Main.face.idle();
+        Main.face.idle();
+
+        // -- Waffe --
+        Main.gun.idle();
     }
 
     public void drawRect(Rectangle rect, double x, double y, double width, double height, int color, Group group) {
@@ -254,31 +278,32 @@ public class Display {
         group.getChildren().add(texts);
     }
 
-    public void drawPicture(Image image, String file, ImageView view, double x, double y, Group group) {
-        image = new Image(file);
-        view = new ImageView(image);
+    public void drawPicture(String file, double x, double y, Group group) {
+        Image image = new Image(file);
+        ImageView view = new ImageView(image);
         view.setX(x);
         view.setY(y);
 
         group.getChildren().add(view);
     }
 
-    /*
-    public String getPlayerImage(Player player) {
-        if(player.getLife() >= 80) {
-            return "file:src/resource/Standard/STFST01.png";
-        } else if(player.getLife() >= 60) {
-            return "file:src/resource/Standard/STFST11.png";
-        } else if(player.getLife() >= 40) {
-            return "file:src/resource/Standard/STFST21.png";
-        } else if(player.getLife() >= 20) {
-            return "file:src/resource/Standard/STFST31.png";
-        } else if(player.getLife() >= 1) {
-            return "file:src/resource/Standard/STFST41.png";
-        } else {
-            return "file:src/resource/Standard/STFST51.png";
-        }
-    } */
+    public void drawGun(String file) {
+        drawPicture(file, (double) GAME_WIDTH / 2, HEIGHT - 170, root);
+    }
+
+    public void drawEnemy(String file, double x, double y, double distance, Group group) {
+        Image image = new Image(file);
+        ImageView view = new ImageView(image);
+
+
+        double imageHeight = (64 * HEIGHT) / distance;
+        view.setFitHeight(imageHeight);
+        view.setFitWidth(imageHeight);
+        view.setX(x - (imageHeight / 2));
+        view.setY(y - (imageHeight / 2));
+        group.getChildren().add(view);
+    }
+
 
     public int getGAME_WIDTH() {
         return GAME_WIDTH;
@@ -286,7 +311,6 @@ public class Display {
     public int getHEIGHT() {
         return HEIGHT;
     }
-
     public int getWIDTH() {
         return WIDTH;
     }

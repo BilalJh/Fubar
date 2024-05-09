@@ -2,20 +2,50 @@ package net.bilaljh.fubar;
 
 public class Actor {
 
-    public int cellX, cellY, life;
-    public double angle, posX, posY, deltaX, deltaY;
+    public int cellX, cellY, life, mapX, mapY;
+    public double angle, posX, posY, angleX, angleY, deltaDistX, deltaDistY, endX, endY;
 
 
     public void move(double offset) {
-        if(!isColliding(offset)) {
-            deltaX = Math.cos(angle);
-            deltaY = Math.sin(angle);
-            posX += deltaX * offset;
-            posY += deltaY * offset;
+        angleX = Math.cos(angle);
+        angleY = Math.sin(angle);
+
+        deltaDistX = Math.sqrt(1 + (angleY * angleY) / (angleX * angleX));
+        deltaDistY = Math.sqrt(1 + (angleX * angleX) / (angleY * angleY));
+
+        if(deltaDistX < deltaDistY) {
+            endX = getPosX() + deltaDistX * angleX;
+            endY = getPosY() + deltaDistX * angleX;
+        } else {
+            endX = getPosX() + deltaDistY * angleY;
+            endY = getPosY() + deltaDistY * angleY;
+        }
+
+        mapX = (int) (endX / 64);
+        mapY = (int) (endY / 64);
+
+        if(Main.map.map[(int) ((posX + angleX * offset) / 64)][(int) ((posY + angleY * offset) / 64)] == 0) {
+            posX += angleX * offset;
+            posY += angleY * offset;
             cellX = (int) (posX / 64);
             cellY = (int) (posY / 64);
         }
+
+//        if(endX == Main.lostSoul.getPosX() && endY == Main.lostSoul.getPosY()) {
+//
+//        }
     }
+
+//    public void move(double offset) {
+//        if(!isColliding(offset)) {
+//            deltaX = Math.cos(angle);
+//            deltaY = Math.sin(angle);
+//            posX += deltaX * offset;
+//            posY += deltaY * offset;
+//            cellX = (int) (posX / 64);
+//            cellY = (int) (posY / 64);
+//        }
+//    }
 
     public void setLocation(double posX, double posY) {
         this.posX = posX;
@@ -25,27 +55,27 @@ public class Actor {
         System.out.println("posX: " + this.posX + " posY: " + this.posY);
     }
 
-    public boolean isColliding() {
-        if(cellX > 0 || cellY > 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-    public boolean isColliding(double offset) {
-        if(Main.map.map[(int) ((posX + offset) / 64)][(int) ((posY + offset) / 64)] == 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-    public boolean isColliding(Actor other) {
-        if(posX == other.posX && posY == other.posY) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+//    public boolean isColliding() {
+//        if(cellX > 0 || cellY > 0) {
+//            return false;
+//        } else {
+//            return true;
+//        }
+//    }
+//    public boolean isColliding(double offset) {
+//        if(Main.map.map[(int) ((posX + offset) / 64)][(int) ((posY + offset) / 64)] == 0) {
+//            return false;
+//        } else {
+//            return true;
+//        }
+//    }
+//    public boolean isColliding(Actor other) {
+//        if(posX == other.posX && posY == other.posY) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
 
 
     public int getCellX() {

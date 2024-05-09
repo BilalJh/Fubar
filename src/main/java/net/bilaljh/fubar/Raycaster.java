@@ -3,7 +3,7 @@ package net.bilaljh.fubar;
 import java.lang.Math;
 import javafx.scene.paint.Color;
 
-public class Raycaster extends Actor {
+public class Raycaster {
 
     private int[][] map = Main.map.map;
     Color wallColor;
@@ -20,7 +20,7 @@ public class Raycaster extends Actor {
         int mapBorderY = Main.map.getMapBorderY();
 
         for (int i = 0; i < Main.rayNumber; i++) { // 90 Strahlen für ein Sichtfeld von 90 Grad
-            double rayAngle = angle + Math.toRadians((double) i /4); // Aktueller Winkel des Strahls
+            double rayAngle = angle + Math.toRadians((double) i / 4); // Aktueller Winkel des Strahls
 
             // Richtung des Strahls in x- und y-Koordinaten
             double rayX = Math.cos(rayAngle);
@@ -41,12 +41,10 @@ public class Raycaster extends Actor {
                     // Der Ray trifft vertikal auf eine Wand
                     startX += deltaDistX * rayX;
                     startY += deltaDistX * rayY;
-                    double shade = 0.5;
                 } else {
                     // Der Ray trifft horizontal auf eine Wand
                     startX += deltaDistY * rayX;
                     startY += deltaDistY * rayY;
-                    double shade = 1;
                 }
 
                 // Kollisionserkennung: Ist die aktuelle Zelle eine Wand?

@@ -29,7 +29,7 @@ public class Display {
     Line[] blackLines;
     Rectangle playerRect, enemyRect, floor;
     Rectangle[] rectangles;
-    Text life1, life2;
+    Text lifeOutline, lifeInline, scoreOutline, scoreInline;
     Image lostSoulImage;
     Ray enemyRay;
 
@@ -38,7 +38,6 @@ public class Display {
     private final int WIDTH = Main.SCREEN_WIDTH;
     private final int HEIGHT = Main.SCREEN_HEIGHT;
     private final int GAME_WIDTH = Main.GAME_WIDTH;
-    private final int middleX = GAME_WIDTH + ((WIDTH - GAME_WIDTH) / 2);
 
 
     public Display() {
@@ -50,8 +49,10 @@ public class Display {
         playerLine = new Line();
         lines = new Line[Main.RAY_NUMBER];
         blackLines = new Line[Main.RAY_NUMBER];
-        life1 = new Text();
-        life2 = new Text();
+        lifeOutline = new Text();
+        lifeInline = new Text();
+        scoreOutline = new Text();
+        scoreInline = new Text();
         lostSoulImage = new Image("file:src/resource/LS00.png");
 
         // -- Hauptfenster --
@@ -70,24 +71,23 @@ public class Display {
 
 
         // ---- 2D Ansicht ----
-        mapStage = new Stage();
-        mapRoot = new Group();
-        mapScene = new Scene(mapRoot, Color.BLACK);
+        if(Main.DEVELOPER_MODE) {
+            mapStage = new Stage();
+            mapRoot = new Group();
+            mapScene = new Scene(mapRoot, Color.BLACK);
 
-        mapStage.getIcons().add(lostSoulImage);
-        mapStage.setTitle("Fubar! - PreAlpha v0.3 - Map");
-        mapStage.setWidth(GAME_WIDTH);
-        mapStage.setHeight(HEIGHT);
-        mapStage.setResizable(true);
-        //mapStage.setX(Screen.getScreens().get(0).getBounds().getWidth() / 2 - 300);
-        //mapStage.setY(Screen.getScreens().get(0).getBounds().getWidth() / 2);
+            mapStage.getIcons().add(lostSoulImage);
+            mapStage.setTitle("Fubar! - PreAlpha v0.3 - Map");
+            mapStage.setWidth(GAME_WIDTH);
+            mapStage.setHeight(HEIGHT);
+            mapStage.setResizable(true);
 
+            mapStage.setScene(mapScene);
+            mapStage.show();
+        }
 
         primaryStage.setScene(primaryScene);
         primaryStage.show();
-
-        mapStage.setScene(mapScene);
-        mapStage.show();
 
         startUpdateTimer();
 
@@ -148,8 +148,6 @@ public class Display {
     }
 
     public void draw3D() {
-
-
         root.getChildren().clear();
 
         drawRect(floor, 0, (double) HEIGHT / 2, GAME_WIDTH, HEIGHT, Color.rgb(0,0,94), root);
@@ -196,19 +194,35 @@ public class Display {
     }
 
     public void drawHUD() {
-        drawPicture("file:src/resource/Hud.png", middleX - 75, 0, root);
+        drawPicture("file:src/resource/Hud.png", WIDTH - 150, 0, root);
 
         // -- Lebensanzeige --
         if(player.getLife() == 100) {
-            drawText(life1, GAME_WIDTH + 25, HEIGHT / 5, String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
-            drawText(life2, GAME_WIDTH + 25, (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
+            drawText(lifeOutline, WIDTH - 120, HEIGHT / 5, String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
+            drawText(lifeInline, WIDTH - 120, (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
         } else if(player.getLife() < 10 && player.getLife() >= 0) {
-            drawText(life1, GAME_WIDTH + 57, HEIGHT / 5, String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
-            drawText(life2, GAME_WIDTH + 57, (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
+            drawText(lifeOutline, WIDTH - 100, HEIGHT / 5, String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
+            drawText(lifeInline, WIDTH - 100, (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
         } else {
-            drawText(life1, GAME_WIDTH + 40, HEIGHT / 5, String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
-            drawText(life2, GAME_WIDTH + 40, (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
+            drawText(lifeOutline, WIDTH - 120, HEIGHT / 5, String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
+            drawText(lifeInline, WIDTH - 120, (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
         }
+
+        // -- Punkteanzeige --
+        if(player.getScore() <= 9) {
+            drawText(scoreOutline, GAME_WIDTH + 55, HEIGHT / 5 * 4 + 17, String.valueOf(Main.player.getScore()), 120, Color.rgb(94, 18, 36), root);
+            drawText(scoreInline, GAME_WIDTH + 55, (HEIGHT / 5 * 4) - 3 + 17, String.valueOf(Main.player.getScore()), 110, Color.rgb(255, 0, 0), root);
+        } else if(player.getScore() < 100) {
+            drawText(scoreOutline, GAME_WIDTH + 40, HEIGHT / 5 * 4 + 17, String.valueOf(Main.player.getScore()), 120, Color.rgb(94, 18, 36), root);
+            drawText(scoreInline, GAME_WIDTH + 40, (HEIGHT / 5 * 4) - 3 + 17, String.valueOf(Main.player.getScore()), 110, Color.rgb(255, 0, 0), root);
+        } else if(player.getScore() < 1000 ) {
+            drawText(scoreOutline, GAME_WIDTH + 25, HEIGHT / 5 * 4 + 17, String.valueOf(Main.player.getScore()), 120, Color.rgb(94, 18, 36), root);
+            drawText(scoreInline, GAME_WIDTH + 25, (HEIGHT / 5 * 4) - 3 + 17, String.valueOf(Main.player.getScore()), 110, Color.rgb(255, 0, 0), root);
+        } else if(player.getScore() > 999) {
+            drawText(scoreOutline, GAME_WIDTH + 20, HEIGHT / 5 * 4 + 7, String.valueOf(Main.player.getScore()), 100, Color.rgb(94, 18, 36), root);
+            drawText(scoreInline, GAME_WIDTH + 20, (HEIGHT / 5 * 4) - 3 + 7, String.valueOf(Main.player.getScore()), 90, Color.rgb(255, 0, 0), root);
+        }
+
         Main.face.idle();
 
         // -- Waffe --
@@ -288,7 +302,7 @@ public class Display {
     }
 
     public void drawGun(String file) {
-        drawPicture(file, (double) GAME_WIDTH / 2, HEIGHT - 170, root);
+        drawPicture(file, (double) GAME_WIDTH / 2 - 65, HEIGHT - 170, root);
     }
 
     public void drawEnemy(String file, double x, double y, double distance, Group group) {

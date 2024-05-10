@@ -18,6 +18,5 @@ public class Player extends Actor {
 
     public void fire() {
         Main.engine.castShot();
-        System.out.println("Syso");
     }
 }

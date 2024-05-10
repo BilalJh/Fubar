@@ -98,9 +98,9 @@ public class Raycaster {
         double playerPosX = player.getPosX(); // Spielerposition X
         double playerPosY = player.getPosY(); // Spielerposition Y
         double angle = player.getAngle() - Math.toRadians(15); // Startwinkel für das Sichtfeld
+        double rayAngle = angle;
 
-        for(int i = 0; i < 30; i++) {
-            double rayAngle = angle + Math.toRadians((double) i / 4);
+        //for(int i = 0; i < 60; i++) {
             double startX = playerPosX;
             double startY = playerPosY;
 
@@ -108,10 +108,14 @@ public class Raycaster {
             double stepX = Math.cos(rayAngle);
             double stepY = Math.sin(rayAngle);
 
-            while (true) {
+            while(true) {
                 // Überprüfen, ob der Strahl die LostSoul trifft
-                if (collidesWithLostSoul(startX, startY)) {
+                if(collidesWithLostSoul(startX, startY)) {
                     Main.lostSoul.die();
+                    break;
+                }
+                else if(startX > 1000 || startX < -1000 || startY > 1000 || startY < -1000) {
+                    System.out.println("missed");
                     break;
                 }
 
@@ -119,12 +123,12 @@ public class Raycaster {
                 startX += stepX;
                 startY += stepY;
             }
-        }
+        //}
     }
 
     // Methode zur Überprüfung der Kollision mit dem LostSoul
     public boolean collidesWithLostSoul(double x, double y) {
         double distanceToLostSoul = Math.sqrt(Math.pow(x - Main.lostSoul.getPosX(), 2) + Math.pow(y - Main.lostSoul.getPosY(), 2));
-        return distanceToLostSoul < 50; // Anpassen des Schwellenwerts für die Kollisionsabfrage
+        return distanceToLostSoul < 5000; // Anpassen des Schwellenwerts für die Kollisionsabfrage
     }
 }

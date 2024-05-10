@@ -106,7 +106,7 @@ public class Face {
     }
 
     public void drawFace(String currentString) {
-        drawImage(image, currentString, imageView, middleX - 50, Main.display.getHEIGHT() / 2 - 52, Main.display.root);
+        drawImage(image, currentString, imageView, Main.display.getWIDTH() - 75 - 45, Main.display.getHEIGHT() / 2 - 52, Main.display.root);
     }
 
     public void drawImage(Image image, String file, ImageView view, double x, double y, Group group) {

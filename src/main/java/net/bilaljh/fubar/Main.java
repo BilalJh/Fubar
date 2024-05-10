@@ -19,8 +19,8 @@ public class Main extends Application {
 
     public static final int RAY_NUMBER = 360;
     public static final int SCREEN_HEIGHT = 640;
-    public static final int SCREEN_WIDTH = 1110;
-    public static final int GAME_WIDTH = 960;
+    public static final int SCREEN_WIDTH = 1205;
+    public static final int GAME_WIDTH = 1080;
     public static final boolean DEVELOPER_MODE = true;
 
     public static Ray[] rays, enemyRays;
@@ -54,7 +54,9 @@ public class Main extends Application {
             switch(keyCode) {
                 case W:
                     player.move(10);
-                    //player.setLife(player.getLife()-1);
+                    if(DEVELOPER_MODE) {
+                        player.setLife(player.getLife()-1);
+                    }
                     break;
                 case A:
                     player.setAngle(player.getAngle()-Math.toRadians(15));
@@ -73,6 +75,7 @@ public class Main extends Application {
                     break;
                 case SPACE:
                     player.fire();
+                    player.setScore(player.getScore() + 1);
                     gun.fire();
                     break;
                 default:

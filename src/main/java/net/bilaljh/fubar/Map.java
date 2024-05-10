@@ -19,8 +19,8 @@ public class Map {
         borderAverage = ((mapBorderX + mapBorderY));
         map = new int[mapBorderX + 1][mapBorderY + 1];
 
-        lostSoulSpawnX = randomizer.nextInt(mapBorderX) + 2;
-        lostSoulSpawnY = randomizer.nextInt(mapBorderY) + 2;
+        lostSoulSpawnX = randomizer.nextInt(mapBorderX - 2) + 2;
+        lostSoulSpawnY = randomizer.nextInt(mapBorderY - 2) + 2;
         System.out.println("lostSoulSpawnX: " + lostSoulSpawnX + ", lostSoulSpawnY: " + lostSoulSpawnY);
         playerSpawnX = mapBorderX / 2;
         playerSpawnY = mapBorderY / 2;

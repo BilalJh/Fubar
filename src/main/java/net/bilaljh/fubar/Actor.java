@@ -1,13 +1,13 @@
 package net.bilaljh.fubar;
 
+import java.util.Random;
+
 public class Actor {
 
-    public int cellX, cellY, life, mapX, mapY, score;
+    public int life, mapX, mapY, score;
     public double angle, posX, posY, angleX, angleY, deltaDistX, deltaDistY, endX, endY;
-    public Ray shot;
 
-
-    public void move(double offset) {
+    public void move(double offset, boolean isLostSoul) {
         angleX = Math.cos(angle);
         angleY = Math.sin(angle);
 
@@ -25,14 +25,74 @@ public class Actor {
         mapX = (int) (endX / 64);
         mapY = (int) (endY / 64);
 
-        if (Main.map.map[(int) ((posX + angleX * offset) / 64)][(int) ((posY + angleY * offset) / 64)] == 0) {
+        if ((Main.map.map[(int) ((posX + angleX * offset) / 64)][(int) ((posY + angleY * offset) / 64)] == 0) || isLostSoul) {
             posX += angleX * offset;
             posY += angleY * offset;
-            cellX = (int) (posX / 64);
-            cellY = (int) (posY / 64);
         }
     }
+    public void move(double offset, String direction) {
+        switch(direction) {
+            case "right":
+                angleX = Math.cos(angle + Math.toRadians(90));
+                angleY = Math.sin(angle + Math.toRadians(90));
 
+                deltaDistX = Math.sqrt(1 + (angleY * angleY) / (angleX * angleX));
+                deltaDistY = Math.sqrt(1 + (angleX * angleX) / (angleY * angleY));
+
+                if (deltaDistX < deltaDistY) {
+                    endX = getPosX() + deltaDistX * angleX;
+                    endY = getPosY() + deltaDistX * angleX;
+                } else {
+                    endX = getPosX() + deltaDistY * angleY;
+                    endY = getPosY() + deltaDistY * angleY;
+                }
+
+                mapX = (int) (endX / 64);
+                mapY = (int) (endY / 64);
+
+                if (Main.map.map[(int) ((posX + angleX * offset) / 64)][(int) ((posY + angleY * offset) / 64)] == 0) {
+                    posX += angleX * offset;
+                    posY += angleY * offset;
+                }
+                break;
+            case "left":
+                angleX = Math.cos(angle - Math.toRadians(90));
+                angleY = Math.sin(angle - Math.toRadians(90));
+
+                deltaDistX = Math.sqrt(1 + (angleY * angleY) / (angleX * angleX));
+                deltaDistY = Math.sqrt(1 + (angleX * angleX) / (angleY * angleY));
+
+                if (deltaDistX < deltaDistY) {
+                    endX = getPosX() + deltaDistX * angleX;
+                    endY = getPosY() + deltaDistX * angleX;
+                } else {
+                    endX = getPosX() + deltaDistY * angleY;
+                    endY = getPosY() + deltaDistY * angleY;
+                }
+
+                mapX = (int) (endX / 64);
+                mapY = (int) (endY / 64);
+
+                if(Main.map.map[(int) ((posX + angleX * offset) / 64)][(int) ((posY + angleY * offset) / 64)] == 0) {
+                    posX += angleX * offset;
+                    posY += angleY * offset;
+                }
+                break;
+        }
+
+    }
+    public void respawn() {
+        Map map = Main.map;
+        Random randomizer = new Random();
+        int x = randomizer.nextInt(map.getMapBorderX() - 1) + 1;
+        int y = randomizer.nextInt(map.getMapBorderY() - 1) + 1;
+
+        setLocation(x * 64 + 32, y * 64 + 32);
+    }
+    public void setLocation(int posX, int posY) {
+        setPosX(posX);
+        setPosY(posY);
+    }
 
     public int getLife() {
         return life;
@@ -51,14 +111,12 @@ public class Actor {
     }
     public void setPosX(int posX) {
         this.posX = posX;
-        this.cellX = posX / 64;
     }
     public double getPosY() {
         return posY;
     }
     public void setPosY(int posY) {
         this.posY = posY;
-        this.cellY = posY / 64;
     }
     public int getScore() {
         return score;

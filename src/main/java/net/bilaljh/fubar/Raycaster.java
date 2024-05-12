@@ -18,7 +18,7 @@ public class Raycaster {
         int mapBorderY = Main.map.getMapBorderY();
         boolean hit;
 
-        for (int i = 0; i < Main.RAY_NUMBER; i++) { // 90 Strahlen für ein Sichtfeld von 90 Grad
+        for (int i = 0; i < Main.RAY_NUMBER; i++) {
             hit = false;
             double rayAngle = angle + Math.toRadians((double) i / 4); // Aktueller Winkel des Strahls
 
@@ -30,12 +30,12 @@ public class Raycaster {
             double deltaDistX = Math.sqrt(1 + (rayY * rayY) / (rayX * rayX));
             double deltaDistY = Math.sqrt(1 + (rayX * rayX) / (rayY * rayY));
 
-            // Startposition des Strahls in der Kachel-Grid (vor dem Spieler)
+
             double startX = playerPosX;
             double startY = playerPosY;
 
             // Schrittweises Bewegen des Strahls entlang der Karte
-            while (true) {
+            while(true) {
                 // Welche Seite des nächsten Zellgrenzkreuzung wird getroffen zuerst?
                 if (deltaDistX < deltaDistY) {
                     // Der Ray trifft vertikal auf eine Wand
@@ -101,34 +101,49 @@ public class Raycaster {
         double rayAngle = angle;
 
         //for(int i = 0; i < 60; i++) {
-            double startX = playerPosX;
-            double startY = playerPosY;
+        double startX = playerPosX;
+        double startY = playerPosY;
 
-            // Schrittweite für den Strahl
-            double stepX = Math.cos(rayAngle);
-            double stepY = Math.sin(rayAngle);
+        // Schrittweite für den Strahl
+        double stepX = Math.cos(rayAngle);
+        double stepY = Math.sin(rayAngle);
 
-            while(true) {
-                // Überprüfen, ob der Strahl die LostSoul trifft
-                if(collidesWithLostSoul(startX, startY)) {
-                    Main.lostSoul.die();
-                    break;
-                }
-                else if(startX > 1000 || startX < -1000 || startY > 1000 || startY < -1000) {
-                    System.out.println("missed");
-                    break;
-                }
-
-                // Schrittweise Bewegung des Strahls entlang seiner Richtung
-                startX += stepX;
-                startY += stepY;
+        while(true) {
+            // Überprüfen, ob der Strahl die LostSoul trifft
+            if(collidesWithLostSoul(startX, startY, Main.lostSoul.getPosX(), Main.lostSoul.getPosY(), rayAngle)) {
+                Main.lostSoul.die();
+                break;
             }
+            else if(startX > 1000 || startX < -1000 || startY > 1000 || startY < -1000) {
+                System.out.println("missed");
+                break;
+            }
+
+            // Schrittweise Bewegung des Strahls entlang seiner Richtung
+            startX += stepX;
+            startY += stepY;
+        }
         //}
     }
 
     // Methode zur Überprüfung der Kollision mit dem LostSoul
-    public boolean collidesWithLostSoul(double x, double y) {
-        double distanceToLostSoul = Math.sqrt(Math.pow(x - Main.lostSoul.getPosX(), 2) + Math.pow(y - Main.lostSoul.getPosY(), 2));
-        return distanceToLostSoul < 5000; // Anpassen des Schwellenwerts für die Kollisionsabfrage
+    public boolean collidesWithLostSoul(double playerX, double playerY, double soulX, double soulY, double playerDirection) {
+        // Berechnung des Winkels zwischen der Blickrichtung des Spielers und der Position der verlorenen Seele
+        double angle = Math.atan2(soulY - playerY, soulX - playerX);
+
+        // Umrechnung des Winkels in Grad
+        angle = Math.toDegrees(angle);
+        playerDirection = Math.toDegrees(playerDirection);
+
+        // Überprüfen, ob der Winkel innerhalb eines bestimmten Bereichs liegt
+        double angleDifference = Math.abs(angle - playerDirection);
+        // Normalisierung des Winkelunterschieds auf den Bereich [-180, 180]
+        angleDifference = (angleDifference + 180) % 360 - 180;
+
+        // Schwellenwert für den maximalen Kollisionswinkel
+        double collisionAngleThreshold = 20; // Zum Beispiel 45 Grad
+
+        // Rückgabe, ob der Winkel innerhalb des Schwellenwerts liegt
+        return Math.abs(angleDifference) <= collisionAngleThreshold;
     }
 }

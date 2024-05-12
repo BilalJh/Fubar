@@ -24,13 +24,14 @@ public class Display {
 
     Player player;
     LostSoul lostSoul;
-    Line playerLine;
+    Line playerLine, enemyLine;
     Line[] lines;
     Line[] blackLines;
-    Rectangle playerRect, enemyRect, floor;
+    Rectangle playerRect, enemyRect, floorRect, damageRect, menuSelectionRestartRect, menuSelectionExitRect;
     Rectangle[] rectangles;
     Text lifeOutline, lifeInline, scoreOutline, scoreInline;
     Image lostSoulImage;
+
     Ray enemyRay;
 
     double enemyX;
@@ -43,10 +44,8 @@ public class Display {
     public Display() {
         player = Main.player;
         lostSoul = Main.lostSoul;
-        playerRect = new Rectangle();
-        enemyRect = new Rectangle();
-        floor = new Rectangle();
         playerLine = new Line();
+        enemyLine = new Line();
         lines = new Line[Main.RAY_NUMBER];
         blackLines = new Line[Main.RAY_NUMBER];
         lifeOutline = new Text();
@@ -78,8 +77,8 @@ public class Display {
 
             mapStage.getIcons().add(lostSoulImage);
             mapStage.setTitle("Fubar! - PreAlpha v0.3 - Map");
-            mapStage.setWidth(GAME_WIDTH);
-            mapStage.setHeight(HEIGHT);
+            mapStage.setWidth(1920);
+            mapStage.setHeight(1080);
             mapStage.setResizable(true);
 
             mapStage.setScene(mapScene);
@@ -99,8 +98,13 @@ public class Display {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    Main.engine.castRays();
-                    draw();
+                    if(!Main.gameOver) {
+                        Main.engine.castRays();
+                        Main.lostSoul.idle();
+                        draw();
+                    } else {
+                        gameOver();
+                    }
                 });
             }
         }, 0, 16); // 16 Millisekunden (~60 FPS)
@@ -113,44 +117,42 @@ public class Display {
     }
 
     public void draw2D() {
-
-        rectangles = new Rectangle[1024];
         mapRoot.getChildren().clear();
         double posX = 0;
         double posY = 0;
-        int counter = 0;
 
         for(int i = 0; i < Main.map.getMapBorderX(); i++) {
             for(int ii = 0; ii < Main.map.getMapBorderY(); ii++) {
-                rectangles[counter] = new Rectangle();
-                drawRect(rectangles[counter], posX, posY, 64, 64, Main.map.map[i][ii], mapRoot);
+                drawRect(posX, posY, 64, 64, Main.map.map[i][ii], mapRoot);
                 posY += 64;
-                counter++;
             }
             posX += 64;
             posY = 0;
         }
 
-        drawRect(playerRect, player.getPosX() - 10, player.getPosY() - 10, 20, 20, 6, mapRoot);
-        drawRect(enemyRect, lostSoul.getPosX() - 10, lostSoul.getPosY() - 10, 20, 20, 6, mapRoot);
+        drawRect(player.getPosX() - 10, player.getPosY() - 10, 20, 20, 6, mapRoot);
+        drawRect(lostSoul.getPosX() - 10, lostSoul.getPosY() - 10, 20, 20, 6, mapRoot);
 
         for(int i = 0; i < Main.RAY_NUMBER; i++) {
             lines[i] = new Line();
             Color rayColor;
-            if(Main.rays[i].isHit()) {
-                rayColor = Color.rgb(0, 255, 0);
-            } else {
-                rayColor = Main.rays[i].getColor();
+            if(Main.rays[i] != null) {
+                if(Main.rays[i].isHit()) {
+                    rayColor = Color.rgb(0, 255, 0);
+                } else {
+                    rayColor = Main.rays[i].getColor();
+                }
+                drawLine(lines[i], Main.player.getPosX(), Main.player.getPosY(), Main.rays[i].getEndX(), Main.rays[i].getEndY(), 1, rayColor, mapRoot);
             }
-            drawLine(lines[i], Main.player.getPosX(), Main.player.getPosY(), Main.rays[i].getEndX(), Main.rays[i].getEndY(), 1, rayColor, mapRoot);
         }
         drawLine(playerLine, Main.player.getPosX(), Main.player.getPosY(), Main.player.getPosX() + 50 * Math.cos(Main.player.getAngle()), Main.player.getPosY() + 50 * Math.sin(Main.player.getAngle()), 1, Color.RED, mapRoot);
+        drawLine(enemyLine, Main.lostSoul.getPosX(), Main.lostSoul.getPosY(), Main.lostSoul.getPosX() + 50 * Math.cos(Main.lostSoul.getAngle()), Main.lostSoul.getPosY() + 50 * Math.sin(Main.lostSoul.getAngle()), 1, Color.RED, mapRoot);
     }
 
     public void draw3D() {
         root.getChildren().clear();
 
-        drawRect(floor, 0, (double) HEIGHT / 2, GAME_WIDTH, HEIGHT, Color.rgb(0,0,94), root);
+        drawRect(0, (double) HEIGHT / 2, GAME_WIDTH, HEIGHT, Color.rgb(0,0,94), root);
         for(int i = 0; i < Main.RAY_NUMBER; i++) {
             blackLines[i] = new Line();
             lines[i] = new Line();
@@ -187,40 +189,90 @@ public class Display {
         }
         if(enemyRay != null) {
             if(enemyRay.isHit()) {
-                Main.lostSoul.idle(enemyX, 300);
+                Main.lostSoul.show(enemyX, 300);
                 enemyRay = null;
             }
         }
     }
 
     public void drawHUD() {
+        int score = player.getScore();
+        int life = player.getLife();
+        int xScore1 = WIDTH - 90,
+            xScore2 = WIDTH - 90,
+            yScore1 = HEIGHT / 5 * 4 + 25,
+            yScore2 = yScore1 - 3,
+            size1 = 120,
+            size2 = 110,
+            xLife1 = WIDTH - 120,
+            xLife2 = xLife1,
+            yLife1 = HEIGHT / 5 + 10,
+            yLife2 = yLife1 - 3;
+
         drawPicture("file:src/resource/Hud.png", WIDTH - 150, 0, root);
 
         // -- Lebensanzeige --
-        if(player.getLife() == 100) {
-            drawText(lifeOutline, WIDTH - 120, HEIGHT / 5, String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
-            drawText(lifeInline, WIDTH - 120, (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
-        } else if(player.getLife() < 10 && player.getLife() >= 0) {
-            drawText(lifeOutline, WIDTH - 100, HEIGHT / 5, String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
-            drawText(lifeInline, WIDTH - 100, (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
-        } else {
-            drawText(lifeOutline, WIDTH - 120, HEIGHT / 5, String.valueOf(Main.player.getLife()), 120, Color.rgb(94, 18, 36), root);
-            drawText(lifeInline, WIDTH - 120, (HEIGHT / 5) - 3, String.valueOf(Main.player.getLife()), 110, Color.rgb(255, 0, 0), root);
+        if(life == 100) {
+            xLife1 = WIDTH - 120;
+            xLife2 = xLife1;
+            yLife1 = HEIGHT / 5 + 10;
+            yLife2 = yLife1 - 3;
+        } else if(life < 100 && life > 19) {
+            xLife1 = WIDTH - 105;
+            xLife2 = xLife1;
+            yLife1 = HEIGHT / 5 + 10;
+            yLife2 = yLife1 - 3;
+        } else if(life < 20 && life > 9) {
+            xLife1 = WIDTH - 100;
+            xLife2 = xLife1;
+            yLife1 = HEIGHT / 5 + 10;
+            yLife2 = yLife1 - 3;
+        } else if(life < 10) {
+            xLife1 = WIDTH - 90;
+            xLife2 = xLife1;
+            yLife1 = HEIGHT / 5 + 10;
+            yLife2 = yLife1 - 3;
         }
+        drawText(xLife1, yLife1, String.valueOf(life), size1, Color.rgb(94, 18, 36), root);
+        drawText(xLife2, yLife2, String.valueOf(life), size2, Color.rgb(255, 0, 0), root);
 
         // -- Punkteanzeige --
-        if(player.getScore() <= 9) {
-            drawText(scoreOutline, GAME_WIDTH + 55, HEIGHT / 5 * 4 + 17, String.valueOf(Main.player.getScore()), 120, Color.rgb(94, 18, 36), root);
-            drawText(scoreInline, GAME_WIDTH + 55, (HEIGHT / 5 * 4) - 3 + 17, String.valueOf(Main.player.getScore()), 110, Color.rgb(255, 0, 0), root);
-        } else if(player.getScore() < 100) {
-            drawText(scoreOutline, GAME_WIDTH + 40, HEIGHT / 5 * 4 + 17, String.valueOf(Main.player.getScore()), 120, Color.rgb(94, 18, 36), root);
-            drawText(scoreInline, GAME_WIDTH + 40, (HEIGHT / 5 * 4) - 3 + 17, String.valueOf(Main.player.getScore()), 110, Color.rgb(255, 0, 0), root);
-        } else if(player.getScore() < 1000 ) {
-            drawText(scoreOutline, GAME_WIDTH + 25, HEIGHT / 5 * 4 + 17, String.valueOf(Main.player.getScore()), 120, Color.rgb(94, 18, 36), root);
-            drawText(scoreInline, GAME_WIDTH + 25, (HEIGHT / 5 * 4) - 3 + 17, String.valueOf(Main.player.getScore()), 110, Color.rgb(255, 0, 0), root);
-        } else if(player.getScore() > 999) {
-            drawText(scoreOutline, GAME_WIDTH + 20, HEIGHT / 5 * 4 + 7, String.valueOf(Main.player.getScore()), 100, Color.rgb(94, 18, 36), root);
-            drawText(scoreInline, GAME_WIDTH + 20, (HEIGHT / 5 * 4) - 3 + 7, String.valueOf(Main.player.getScore()), 90, Color.rgb(255, 0, 0), root);
+        if(player.getScore() >= 10000) {
+            drawText(GAME_WIDTH - 20, HEIGHT / 5 * 4 + 7, "GODLIKE", 70, Color.rgb(94, 18, 36), root);
+            drawText(GAME_WIDTH - 20 + 10, (HEIGHT / 5 * 4) - 3 + 7, "GODLIKE", 60, Color.rgb(255, 0, 0), root);
+        } else if(score <= 9) {
+            xScore1 = WIDTH - 90;
+            xScore2 = WIDTH - 90;
+            size1 = 120;
+            size2 = 110;
+        } else if(score < 100) {
+            xScore1 = WIDTH - 105;
+            xScore2 = xScore1;
+            size1 = 120;
+            size2 = 110;
+        } else if(score < 1000) {
+            xScore1 = WIDTH - 130;
+            xScore2 = xScore1;
+            size1 = 120;
+            size2 = 110;
+        } else if(score < 2000) {
+            xScore1 = WIDTH - 130;
+            xScore2 = xScore1;
+            size1 = 100;
+            size2 = 90;
+        } else if(score < 10000) {
+            xScore1 = WIDTH - 140;
+            xScore2 = xScore1;
+            size1 = 100;
+            size2 = 90;
+        }
+
+        drawText(xScore1, yScore1, String.valueOf(score), size1, Color.rgb(94, 18, 36), root);
+        drawText(xScore2, yScore2, String.valueOf(score), size2, Color.rgb(255, 0, 0), root);
+
+        if(player.getScore() >= 10000) {
+            drawText(GAME_WIDTH - 20, HEIGHT / 5 * 4 + 7, "GODLIKE", 70, Color.rgb(94, 18, 36), root);
+            drawText(GAME_WIDTH - 20 + 10, (HEIGHT / 5 * 4) - 3 + 7, "GODLIKE", 60, Color.rgb(255, 0, 0), root);
         }
 
         Main.face.idle();
@@ -229,50 +281,65 @@ public class Display {
         Main.gun.idle();
     }
 
-    public void drawRect(Rectangle rect, double x, double y, double width, double height, int color, Group group) {
+    public void drawRect(double x, double y, double width, double height, int state, Group group) {
+        Rectangle rect = new Rectangle();
         rect.setX(x);
         rect.setY(y);
         rect.setWidth(width);
         rect.setHeight(height);
-        switch(color) {
+        switch(state) {
             case 1:
-                rect.setFill(Color.WHITE);
+                rect.setFill(Color.rgb(159,0,0));
                 break;
             case 2:
-                rect.setFill(Color.RED);
+                rect.setFill(Color.rgb(47,47,47));
                 break;
             case 3:
-                rect.setFill(Color.BLUE);
+                rect.setFill(Color.rgb(107,71,39));
                 break;
             case 4:
-                rect.setFill(Color.GREEN);
+                rect.setFill(Color.rgb(127, 0, 0));
                 break;
             case 5:
-                rect.setFill(Color.YELLOW);
+                rect.setFill(Color.rgb(135,67,7));
                 break;
             case 6:
-                rect.setFill(Color.PURPLE);
-                break;
-            case 7:
-                rect.setFill(Color.ORANGE);
+                rect.setFill(Color.rgb(139,139,139));
                 break;
             default:
                 rect.setFill(Color.BLACK);
                 break;
         }
         group.getChildren().add(rect);
+        rect = null;
     }
 
-    public void drawRect(Rectangle rect, double x, double y, double width, double height, Color color, Group group) {
+    public void drawRect(double x, double y, double width, double height, Color color, Group group) {
+        Rectangle rect = new Rectangle();
         rect.setX(x);
         rect.setY(y);
         rect.setWidth(width);
         rect.setHeight(height);
         rect.setFill(color);
+
         group.getChildren().add(rect);
+        rect = null;
     }
 
-    public void drawLine (Line line,double startX, double startY, double endX, double endY, double width, Color color, Group group){
+    public void drawRect(double x, double y, double width, double height, Color color, double opacity, Group group) {
+        Rectangle rect = new Rectangle();
+        rect.setX(x);
+        rect.setY(y);
+        rect.setWidth(width);
+        rect.setHeight(height);
+        rect.setFill(color);
+        rect.setOpacity(opacity);
+
+        group.getChildren().add(rect);
+        rect = null;
+    }
+
+    public void drawLine (Line line, double startX, double startY, double endX, double endY, double width, Color color, Group group){
     line.setStartX(startX);
     line.setStartY(startY);
     line.setEndX(endX);
@@ -282,7 +349,8 @@ public class Display {
     group.getChildren().add(line);
     }
 
-    public void drawText(Text texts, double x, double y, String string, int size, Color color, Group group) {
+    public void drawText(double x, double y, String string, int size, Color color, Group group) {
+        Text texts = new Text();
         texts.setX(x);
         texts.setY(y);
         texts.setText(string);
@@ -290,6 +358,7 @@ public class Display {
         texts.setFill(color);
 
         group.getChildren().add(texts);
+        texts = null;
     }
 
     public void drawPicture(String file, double x, double y, Group group) {
@@ -299,12 +368,44 @@ public class Display {
         view.setY(y);
 
         group.getChildren().add(view);
+        image = null;
+        view = null;
     }
 
     public void drawGun(String file) {
         drawPicture(file, (double) GAME_WIDTH / 2 - 65, HEIGHT - 170, root);
     }
 
+    public void gameOver() {
+        int score = Main.player.getScore();
+
+        root.getChildren().clear();
+        drawPicture("file:src/resource/GameOver/Background.png", 0, 0, root);
+
+        drawPicture("file:src/resource/GameOver/GameOver.png", WIDTH / 2 - 186, HEIGHT / 5 * 1, root);
+        drawPicture("file:src/resource/GameOver/Score.png", WIDTH / 6 * 2 - 118, HEIGHT / 4 * 2 - 60, root);
+
+        if(Main.menuSelection == 1) {
+            drawPicture("file:src/resource/LS00.png", WIDTH / 2 - 138 - 120, HEIGHT - 250 - 40, root);
+            drawPicture("file:src/resource/LS00.png", WIDTH / 2 - 138 + 20 + 279, HEIGHT - 250 - 40, root);
+        }
+
+        if(Main.menuSelection == 2) {
+            drawPicture("file:src/resource/LS00.png", WIDTH / 2 - 138 - 120, HEIGHT - 150 - 40, root);
+            drawPicture("file:src/resource/LS00.png", WIDTH / 2 - 138 + 20 + 279, HEIGHT - 150 - 40, root);
+        }
+
+        drawPicture("file:src/resource/GameOver/Exit.png", WIDTH / 2 - 69, HEIGHT - 250, root);
+        drawPicture("file:src/resource/GameOver/Credits.png", WIDTH / 2 - 132, HEIGHT - 150, root);
+
+        drawText(WIDTH / 6 * 4, HEIGHT / 4 * 2, String.valueOf(player.getScore()), 100, Color.rgb(149, 0, 0), root);
+
+        if(Main.showCredits) {
+            root.getChildren().clear();
+            drawPicture("file:src/resource/GameOver/Background.png", 0, 0, root);
+            drawPicture("file:src/resource/GameOver/Credit.png", WIDTH / 2 - 600, HEIGHT / 2 - 192, root);
+        }
+    }
     public void drawEnemy(String file, double x, double y, double distance, Group group) {
         Image image = new Image(file);
         ImageView view = new ImageView(image);
@@ -317,7 +418,6 @@ public class Display {
         view.setY(y - (imageHeight / 2));
         group.getChildren().add(view);
     }
-
 
     public int getGAME_WIDTH() {
         return GAME_WIDTH;

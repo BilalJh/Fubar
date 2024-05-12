@@ -21,7 +21,7 @@ public class Actor {
             endX = getPosX() + deltaDistY * angleY;
             endY = getPosY() + deltaDistY * angleY;
         }
-
+//
         mapX = (int) (endX / 64);
         mapY = (int) (endY / 64);
 

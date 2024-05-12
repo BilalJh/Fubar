@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    public static Random randomizer = new Random();
+    public static Random randomizer;
     public static Raycaster engine;
     public static Player player;
     public static LostSoul lostSoul;
@@ -23,13 +23,13 @@ public class Main extends Application {
     public static final int GAME_WIDTH = 1080;
     public static final boolean DEVELOPER_MODE = true;
 
+    public static int menuSelection;                        //1 = restart, 2 = credits, 3 = exit
+    public static boolean gameOver, showCredits;
+
     public static Ray[] rays, enemyRays;
 
 
     public static void main(String[] args) {
-        rays = new Ray[RAY_NUMBER];
-        enemyRays = new Ray[RAY_NUMBER];
-
         Application.launch(args);
     }
 
@@ -38,11 +38,16 @@ public class Main extends Application {
         randomizer = new Random();
         map = new Map();
         engine = new Raycaster();
-        player = new Player(map.getPlayerSpawnX() * 64, map.getPlayerSpawnY() * 64, 0, 100);
-        lostSoul = new LostSoul(randomizer.nextInt(map.getMapBorderX()) * 64, randomizer.nextInt(map.getMapBorderY()) * 64, 0);
+        player = new Player(map.getPlayerSpawnX() * 64, map.getPlayerSpawnY() * 64, 0);
+        lostSoul = new LostSoul(map.getLostSoulSpawnX() * 64, map.getLostSoulSpawnY() * 64, 0);
         display = new Display();
         face = new Face();
         gun = new Gun();
+        rays = new Ray[RAY_NUMBER];
+        enemyRays = new Ray[RAY_NUMBER];
+        menuSelection = 1;
+        gameOver = false;
+        showCredits = false;
 
         controls();
         Platform.runLater(() -> Main.display.draw());
@@ -51,36 +56,65 @@ public class Main extends Application {
     public void controls() {
         Main.display.primaryScene.setOnKeyPressed(event -> {
             KeyCode keyCode = event.getCode();
-            switch(keyCode) {
-                case W:
-                    player.move(10);
-                    if(DEVELOPER_MODE) {
-                        player.setLife(player.getLife()-1);
-                    }
-                    break;
-                case A:
-                    player.setAngle(player.getAngle()-Math.toRadians(15));
-                    if(player.getAngle() <= 0) {
-                        player.setAngle(Math.toRadians(360));
-                    }
-                    break;
-                case S:
-                    player.move(-10);
-                    break;
-                case D:
-                    player.setAngle(player.getAngle()+Math.toRadians(15));
-                    if(player.getAngle() >= Math.toRadians(360)) {
-                        player.setAngle(0);
-                    }
-                    break;
-                case SPACE:
-                    player.fire();
-                    player.setScore(player.getScore() + 1);
-                    gun.fire();
-                    break;
-                default:
-                    break;
+            if(!gameOver) {
+                switch(keyCode) {
+                    case W:
+                        player.move(10, false);
+                        break;
+                    case A:
+                        player.setAngle(player.getAngle()-Math.toRadians(7));
+                        if(player.getAngle() <= 0) {
+                            player.setAngle(Math.toRadians(360));
+                        }
+                        break;
+                    case S:
+                        player.move(-10, false);
+                        break;
+                    case D:
+                        player.setAngle(player.getAngle()+Math.toRadians(7));
+                        if(player.getAngle() >= Math.toRadians(360)) {
+                            player.setAngle(0);
+                        }
+                        break;
+                    case Q:
+                        player.move(10, "left");
+                        break;
+                    case E:
+                        player.move(10, "right");
+                        break;
+                    case SPACE:
+                        player.setLife(player.getLife() - 100);
+                        player.fire();
+                        gun.fire();
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                switch(keyCode) {
+                    case UP:
+                        if(menuSelection != 1) {
+                            menuSelection--;
+                        }
+                        break;
+                    case DOWN:
+                        if(menuSelection != 2) {
+                            menuSelection++;
+                        }
+                        break;
+                    case SPACE:
+                        if(menuSelection == 1) {
+                            System.exit(0);
+                        } else if(menuSelection == 2) {
+                            showCredits = !showCredits;
+                        }
+                        break;
+                }
             }
         });
+    }
+
+    public void restart() {
+
     }
 }

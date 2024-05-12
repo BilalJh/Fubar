@@ -14,13 +14,24 @@ public class Map {
 
         mapBorderX = randomizer.nextInt(24) + 8;
         mapBorderY = randomizer.nextInt(24) + 8;
-//        mapBorderX = 8;
-//        mapBorderY = 8;
         borderAverage = ((mapBorderX + mapBorderY));
         map = new int[mapBorderX + 1][mapBorderY + 1];
 
-        lostSoulSpawnX = randomizer.nextInt(mapBorderX - 2) + 2;
-        lostSoulSpawnY = randomizer.nextInt(mapBorderY - 2) + 2;
+        lostSoulSpawnX = randomizer.nextInt(mapBorderX);
+        lostSoulSpawnY = randomizer.nextInt(mapBorderY);
+        if(lostSoulSpawnX < 2) {
+            lostSoulSpawnX++;
+        }
+        if(lostSoulSpawnX > mapBorderX) {
+            lostSoulSpawnX--;
+        }
+        if(lostSoulSpawnY < 2) {
+            lostSoulSpawnY++;
+        }
+        if(lostSoulSpawnY > mapBorderY) {
+            lostSoulSpawnY--;
+        }
+
         System.out.println("lostSoulSpawnX: " + lostSoulSpawnX + ", lostSoulSpawnY: " + lostSoulSpawnY);
         playerSpawnX = mapBorderX / 2;
         playerSpawnY = mapBorderY / 2;
@@ -32,18 +43,6 @@ public class Map {
         createWorld();
         generateObstacles();
         generateSpawn(playerSpawnX, playerSpawnY);
-        generateSpawn(lostSoulSpawnX, lostSoulSpawnY);
-
-//        map = new int[][] {
-//                {1, 1, 1, 1, 1, 1, 1, 1},
-//                {2, 0, 2, 0, 0, 0, 0, 1},
-//                {3, 0, 2, 0, 0, 0, 0, 1},
-//                {4, 0, 3, 0, 0, 0, 0, 1},
-//                {5, 0, 0, 0, 0, 0, 0, 1},
-//                {6, 0, 0, 0, 0, 6, 0, 1},
-//                {1, 0, 0, 0, 0, 0, 0, 1},
-//                {1, 1, 1, 1, 1, 1, 1, 1,},
-//        };
     }
 
     public void createWorld() {
@@ -94,5 +93,11 @@ public class Map {
     }
     public int getPlayerSpawnY() {
         return playerSpawnY;
+    }
+    public int getLostSoulSpawnX() {
+        return lostSoulSpawnX;
+    }
+    public int getLostSoulSpawnY() {
+        return lostSoulSpawnY;
     }
 }

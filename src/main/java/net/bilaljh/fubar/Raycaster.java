@@ -1,6 +1,5 @@
 package net.bilaljh.fubar;
 
-import java.lang.Math;
 import javafx.scene.paint.Color;
 
 public class Raycaster {
@@ -110,7 +109,7 @@ public class Raycaster {
 
         while(true) {
             // Überprüfen, ob der Strahl die LostSoul trifft
-            if(collidesWithLostSoul(startX, startY, Main.lostSoul.getPosX(), Main.lostSoul.getPosY(), rayAngle)) {
+            if(collidesWithLostSoul(startX, startY)) {
                 Main.lostSoul.die();
                 break;
             }
@@ -127,23 +126,9 @@ public class Raycaster {
     }
 
     // Methode zur Überprüfung der Kollision mit dem LostSoul
-    public boolean collidesWithLostSoul(double playerX, double playerY, double soulX, double soulY, double playerDirection) {
-        // Berechnung des Winkels zwischen der Blickrichtung des Spielers und der Position der verlorenen Seele
-        double angle = Math.atan2(soulY - playerY, soulX - playerX);
+    public boolean collidesWithLostSoul(double playerX, double playerY) {
+        LostSoul ls = Main.lostSoul;
 
-        // Umrechnung des Winkels in Grad
-        angle = Math.toDegrees(angle);
-        playerDirection = Math.toDegrees(playerDirection);
-
-        // Überprüfen, ob der Winkel innerhalb eines bestimmten Bereichs liegt
-        double angleDifference = Math.abs(angle - playerDirection);
-        // Normalisierung des Winkelunterschieds auf den Bereich [-180, 180]
-        angleDifference = (angleDifference + 180) % 360 - 180;
-
-        // Schwellenwert für den maximalen Kollisionswinkel
-        double collisionAngleThreshold = 20; // Zum Beispiel 45 Grad
-
-        // Rückgabe, ob der Winkel innerhalb des Schwellenwerts liegt
-        return Math.abs(angleDifference) <= collisionAngleThreshold;
+        return ((int) (playerX / 64)) == (int) (ls.getPosX() / 64) && ((int) (playerY / 64)) == (int) (ls.getPosY() / 64);
     }
 }

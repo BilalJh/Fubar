@@ -1,6 +1,5 @@
 package net.bilaljh.fubar;
 
-import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -33,31 +32,6 @@ public class Face {
                 "file:src/resource/Standard/STFST42.png"
             }
     };
-
-    private String[][] sideSheet = {
-            {
-                "file:src/resource/Left/STFL0.png",
-                "file:src/resource/Left/STFL1.png",
-                "file:src/resource/Left/STFL2.png",
-                "file:src/resource/Left/STFL3.png",
-                "file:src/resource/Left/STFL4.png"
-            },
-            {
-                "file:src/resource/Right/STFR0.png",
-                "file:src/resource/Right/STFR1.png",
-                "file:src/resource/Right/STFR2.png",
-                "file:src/resource/Right/STFR3.png",
-                "file:src/resource/Right/STFR4.png"
-            },
-    };
-
-    private String[] ouch = {
-            "file:src/resource/Ouch/STFOUCH0.png",
-            "file:src/resource/Ouch/STFOUCH1.png",
-            "file:src/resource/Ouch/STFOUCH2.png",
-            "file:src/resource/Ouch/STFOUCH3.png",
-            "file:src/resource/Ouch/STFOUCH4.png",
-    };
     private String[] evil = {
             "file:src/resource/Evil/STFEVL0.png",
             "file:src/resource/Evil/STFEVL1.png",
@@ -65,56 +39,87 @@ public class Face {
             "file:src/resource/Evil/STFEVL3.png",
             "file:src/resource/Evil/STFEVL4.png",
     };
-    private String[] kill = {
-            "file:src/resource/Kill/STFKILL0.png",
-            "file:src/resource/Kill/STFKILL1.png",
-            "file:src/resource/Kill/STFKILL2.png",
-            "file:src/resource/Kill/STFKILL3.png",
-            "file:src/resource/Kill/STFKILL4.png",
+    private String[] ouch = {
+            "file:src/resource/Ouch/STFOUCH0.png",
+            "file:src/resource/Ouch/STFOUCH1.png",
+            "file:src/resource/Ouch/STFOUCH2.png",
+            "file:src/resource/Ouch/STFOUCH3.png",
+            "file:src/resource/Ouch/STFOUCH4.png",
     };
+    private String god = "file:src/resource/STFGOD0.png";
     private String dead = "file:src/resource/STFDEAD0.png";
-    public String god = "file:src/resource/STFGOD0.png";
 
-    public String current;
-    private Image image;
-    private ImageView imageView;
-    private final int middleX = (int) (Main.display.getGAME_WIDTH() + ((Main.display.getWIDTH() - Main.display.getGAME_WIDTH()) / 2));
+    private String current;
+    private int bloodLevel;
+    private long marker;
+    private boolean isEvil;
+    private boolean isHurt;
 
     public Face() {
-            current = standardSheet[0][1];
+        bloodLevel = 0;
+        current = standardSheet[bloodLevel][1];
+        isEvil = false;
+        isHurt = false;
     }
 
     public void idle() {
         Player player = Main.player;
-        int bloodLevel;
-        if(player.getLife() >= 80) {
+
+        if(player.getLife() > 100) {
+            current = god;
+        } else if(player.getLife() >= 80) {
             bloodLevel = 0;
+            current = standardSheet[bloodLevel][1];
         } else if(player.getLife() >= 60) {
             bloodLevel = 1;
+            current = standardSheet[bloodLevel][1];
         } else if(player.getLife() >= 40) {
             bloodLevel = 2;
+            current = standardSheet[bloodLevel][1];
         } else if(player.getLife() >= 20) {
             bloodLevel = 3;
+            current = standardSheet[bloodLevel][1];
         } else if(player.getLife() >= 1) {
             bloodLevel = 4;
+            current = standardSheet[bloodLevel][1];
         } else {
             bloodLevel = 4;
+            current = dead;
         }
 
-
-        drawFace(standardSheet[bloodLevel][1]);
+        if(isEvil) {
+            if(System.currentTimeMillis() - marker > 1000) {
+                isEvil = false;
+            } else {
+                drawFace(evil[bloodLevel]);
+            }
+        } else if(isHurt) {
+            if(System.currentTimeMillis() - marker > 1000) {
+                isHurt = false;
+            } else {
+                drawFace(ouch[bloodLevel]);
+            }
+        } else {
+            drawFace(current);
+        }
     }
 
     public void drawFace(String currentString) {
-        drawImage(image, currentString, imageView, Main.display.getWIDTH() - 75 - 45, Main.display.getHEIGHT() / 2 - 52, Main.display.root);
+        Image face = new Image(currentString);
+        ImageView faceView = new ImageView(face);
+        Main.display.drawPicture(faceView, Main.SCREEN_WIDTH - 75 - 45, Main.SCREEN_HEIGHT / 2 - 52, Main.display.getRoot());
     }
 
-    public void drawImage(Image image, String file, ImageView view, double x, double y, Group group) {
-        image = new Image(file);
-        view = new ImageView(image);
-        view.setX(x);
-        view.setY(y);
+    public void setEvil() {
+        isEvil = true;
+        setMark();
+    }
+    public void setHurt() {
+        isHurt = true;
+        setMark();
+    }
 
-        group.getChildren().add(view);
+    public void setMark() {
+        marker = System.currentTimeMillis();
     }
 }

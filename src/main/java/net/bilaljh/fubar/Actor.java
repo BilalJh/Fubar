@@ -1,7 +1,5 @@
 package net.bilaljh.fubar;
 
-import java.util.Random;
-
 public class Actor {
 
     public int life, mapX, mapY, score;
@@ -21,7 +19,7 @@ public class Actor {
             endX = getPosX() + deltaDistY * angleY;
             endY = getPosY() + deltaDistY * angleY;
         }
-//
+
         mapX = (int) (endX / 64);
         mapY = (int) (endY / 64);
 
@@ -81,14 +79,7 @@ public class Actor {
         }
 
     }
-    public void respawn() {
-        Map map = Main.map;
-        Random randomizer = new Random();
-        int x = randomizer.nextInt(map.getMapBorderX() - 1) + 1;
-        int y = randomizer.nextInt(map.getMapBorderY() - 1) + 1;
 
-        setLocation(x * 64 + 32, y * 64 + 32);
-    }
     public void setLocation(int posX, int posY) {
         setPosX(posX);
         setPosY(posY);

@@ -13,6 +13,7 @@ module net.bilaljh.fubar {
     requires javafx.graphics;
     requires annotations;
     requires java.desktop;
+    requires javafx.media;
 
     opens net.bilaljh.fubar to javafx.fxml;
     exports net.bilaljh.fubar;

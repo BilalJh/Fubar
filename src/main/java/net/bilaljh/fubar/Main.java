@@ -172,17 +172,33 @@ public class Main extends Application {
                     case UP:
                         if(menuSelection != 1) {
                             menuSelection--;
+                            display.soundPlayer = new MediaPlayer(display.itemSound);
+                            display.setVolume(display.soundPlayer, soundVolume);
+                            display.playSound(display.soundPlayer);
+                            display.soundPlayer = new MediaPlayer(display.itemSound);
                         }
                         break;
                     case DOWN:
                         if(menuSelection != 2) {
                             menuSelection++;
+                            display.soundPlayer = new MediaPlayer(display.itemSound);
+                            display.setVolume(display.soundPlayer, soundVolume);
+                            display.playSound(display.soundPlayer);
+                            display.soundPlayer = new MediaPlayer(display.itemSound);
                         }
                         break;
                     case SPACE:
                         if(menuSelection == 1) {
+                            display.soundPlayer = new MediaPlayer(display.startSound);
+                            display.setVolume(display.soundPlayer, soundVolume);
+                            display.playSound(display.soundPlayer);
+                            display.soundPlayer = new MediaPlayer(display.startSound);
                             System.exit(0);
                         } else if(menuSelection == 2) {
+                            display.soundPlayer = new MediaPlayer(display.startSound);
+                            display.setVolume(display.soundPlayer, soundVolume);
+                            display.playSound(display.soundPlayer);
+                            display.soundPlayer = new MediaPlayer(display.startSound);
                             showCredits = !showCredits;
                         }
                         break;

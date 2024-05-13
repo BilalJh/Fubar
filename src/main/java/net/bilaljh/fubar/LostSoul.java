@@ -43,11 +43,6 @@ public class LostSoul extends Actor{
 
         player.setLife(player.getLife() - 25);
 
-        display.soundPlayer = new MediaPlayer(display.painSound);
-        display.setVolume(display.soundPlayer, Main.soundVolume);
-        display.playSound(display.soundPlayer);
-        display.soundPlayer = new MediaPlayer(display.painSound);
-
         Main.face.setHurt();
         if(player.getLife() <= 0) {
             display.soundPlayer = new MediaPlayer(display.deathSound);
@@ -55,10 +50,15 @@ public class LostSoul extends Actor{
             display.playSound(display.soundPlayer);
             display.soundPlayer = new MediaPlayer(display.deathSound);
             player.setLife(0);
+            Main.gameState = 3;
         }
         display.drawRect(0, 0, Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, Color.RED, 0.5, Main.display.getRoot());
 
         respawn();
+        display.soundPlayer = new MediaPlayer(display.painSound);
+        display.setVolume(display.soundPlayer, Main.soundVolume);
+        display.playSound(display.soundPlayer);
+        display.soundPlayer = new MediaPlayer(display.painSound);
     }
 
     public void die() {

@@ -121,7 +121,7 @@ public class Main extends Application {
                         }
                         break;
                     case DOWN:
-                        if(menuSelection < 3) {
+                        if(menuSelection < 4) {
                             menuSelection++;
                             display.soundPlayer = new MediaPlayer(display.itemSound);
                             display.setVolume(display.soundPlayer, soundVolume);
@@ -140,27 +140,26 @@ public class Main extends Application {
                             display.stopSound(display.musicPlayer);
                             display.music = new Media(new File(display.musicFiles[randomizer.nextInt(3) + 1]).toURI().toString());
                             display.musicPlayer = new MediaPlayer(display.music);
-                            display.musicPlayer.setAutoPlay(true);
                             display.setVolume(display.musicPlayer, Main.musicVolume);
+                            display.musicPlayer.setAutoPlay(true);
                             display.playSound(display.musicPlayer);
                             showCredits = false;
                         } else if(menuSelection == 2) {
-                            if(showCredits) {
-                                showCredits = false;
-                            }
                             gameState = 4;
                             showCredits = false;
                             display.soundPlayer = new MediaPlayer(display.startSound);
                             display.setVolume(display.soundPlayer, soundVolume);
                             display.playSound(display.soundPlayer);
                             display.soundPlayer = new MediaPlayer(display.startSound);
-                        } else {
+                        } else if(menuSelection == 3){
                             menuSelection = 3;
                             showCredits = !showCredits;
                             display.soundPlayer = new MediaPlayer(display.startSound);
                             display.setVolume(display.soundPlayer, soundVolume);
                             display.playSound(display.soundPlayer);
                             display.soundPlayer = new MediaPlayer(display.startSound);
+                        } else if(menuSelection == 4) {
+                            System.exit(0);
                         }
                         break;
                     default:
@@ -189,10 +188,6 @@ public class Main extends Application {
                         break;
                     case SPACE:
                         if(menuSelection == 1) {
-                            display.soundPlayer = new MediaPlayer(display.startSound);
-                            display.setVolume(display.soundPlayer, soundVolume);
-                            display.playSound(display.soundPlayer);
-                            display.soundPlayer = new MediaPlayer(display.startSound);
                             System.exit(0);
                         } else if(menuSelection == 2) {
                             display.soundPlayer = new MediaPlayer(display.startSound);

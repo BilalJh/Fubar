@@ -14,6 +14,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.File;
 import java.util.Random;
@@ -190,26 +191,9 @@ public class Display {
         primaryStage.setWidth(WIDTH);
         primaryStage.setHeight(HEIGHT);
         primaryStage.setResizable(false);
-        primaryStage.setX(Screen.getPrimary().getBounds().getWidth() / 2);
-        primaryStage.setY(Screen.getPrimary().getBounds().getWidth() / 2);
-        //primaryStage.initStyle(StageStyle.UNDECORATED);
-
-
-        // ---- 2D Ansicht ----
-        if(Main.DEVELOPER_MODE) {
-            mapStage = new Stage();
-            mapRoot = new Group();
-            mapScene = new Scene(mapRoot, Color.BLACK);
-
-            mapStage.getIcons().add(lostSoulImage);
-            mapStage.setTitle("Fubar! - PreAlpha v0.3 - Map");
-            mapStage.setWidth(1920);
-            mapStage.setHeight(1080);
-            mapStage.setResizable(true);
-
-            mapStage.setScene(mapScene);
-            mapStage.show();
-        }
+//        primaryStage.setX(Screen.getPrimary().getBounds().getWidth() / 2);
+//        primaryStage.setY(Screen.getPrimary().getBounds().getWidth() / 2);
+        primaryStage.initStyle(StageStyle.UNDECORATED);
 
         primaryStage.setScene(primaryScene);
         primaryStage.show();
@@ -238,7 +222,6 @@ public class Display {
             Main.engine.castRays();
             Main.player.regenerate();
             Main.lostSoul.idle();
-            draw2D();
             draw3D();
             drawHUD();
         }
@@ -248,39 +231,6 @@ public class Display {
         if(Main.gameState == 4) {
             drawSettings();
         }
-    }
-
-    public void draw2D() {
-        mapRoot.getChildren().clear();
-        double posX = 0;
-        double posY = 0;
-
-        for(int i = 0; i < Main.map.getMapBorderX(); i++) {
-            for(int ii = 0; ii < Main.map.getMapBorderY(); ii++) {
-                drawRect(posX, posY, 64, 64, Main.map.map[i][ii], mapRoot);
-                posY += 64;
-            }
-            posX += 64;
-            posY = 0;
-        }
-
-        drawRect(player.getPosX() - 10, player.getPosY() - 10, 20, 20, 6, mapRoot);
-        drawRect(lostSoul.getPosX() - 10, lostSoul.getPosY() - 10, 20, 20, 6, mapRoot);
-
-        for(int i = 0; i < Main.RAY_NUMBER; i++) {
-            lines[i] = new Line();
-            Color rayColor;
-            if(Main.rays[i] != null) {
-                if(Main.rays[i].isHit()) {
-                    rayColor = Color.rgb(0, 255, 0);
-                } else {
-                    rayColor = Main.rays[i].getColor();
-                }
-                drawLine(lines[i], Main.player.getPosX(), Main.player.getPosY(), Main.rays[i].getEndX(), Main.rays[i].getEndY(), 1, rayColor, mapRoot);
-            }
-        }
-        drawLine(playerLine, Main.player.getPosX(), Main.player.getPosY(), Main.player.getPosX() + 50 * Math.cos(Main.player.getAngle()), Main.player.getPosY() + 50 * Math.sin(Main.player.getAngle()), 1, Color.RED, mapRoot);
-        drawLine(enemyLine, Main.lostSoul.getPosX(), Main.lostSoul.getPosY(), Main.lostSoul.getPosX() + 50 * Math.cos(Main.lostSoul.getAngle()), Main.lostSoul.getPosY() + 50 * Math.sin(Main.lostSoul.getAngle()), 1, Color.RED, mapRoot);
     }
 
     public void draw3D() {
@@ -457,18 +407,24 @@ public class Display {
         }
 
         if(Main.menuSelection == 2) {
-            drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 250 - 40, root);
-            drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 250 - 40, root);
+            drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 270 - 40, root);
+            drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 270 - 40, root);
         }
 
         if(Main.menuSelection == 3) {
-            drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 150 - 40, root);
-            drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 150 - 40, root);
+            drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 190 - 40, root);
+            drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 190 - 40, root);
+        }
+
+        if(Main.menuSelection == 4) {
+            drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 110 - 40, root);
+            drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 110 - 40, root);
         }
 
         drawPicture(startView, (double) WIDTH / 2 - 99, HEIGHT - 350, root);
-        drawPicture(settingsView, (double) WIDTH / 2 - 150, HEIGHT - 250, root);
-        drawPicture(creditsView, (double) WIDTH / 2 - 132, HEIGHT - 150, root);
+        drawPicture(settingsView, (double) WIDTH / 2 - 150, HEIGHT - 270, root);
+        drawPicture(creditsView, (double) WIDTH / 2 - 132, HEIGHT - 190, root);
+        drawPicture(exitView, (double) WIDTH / 2 - 69, HEIGHT - 110, root);
 
         if(Main.showCredits) {
             root.getChildren().clear();

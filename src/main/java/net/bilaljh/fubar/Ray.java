@@ -17,6 +17,9 @@ public class Ray {
         this.hit = hit;
     }
 
+
+    // -- Getter / Setter Methoden
+
     public double getOriginX() {
         return originX;
     }

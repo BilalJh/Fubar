@@ -13,7 +13,7 @@ public class LostSoul extends Actor{
         this.angle = angle;
     }
 
-    public void show(double screenX, double screenY) {
+    public void show(double screenX, double screenY) {              //Methode zum Anzeigen des Gegners
         Player player = Main.player;
         double distance = Math.sqrt(((posX - player.getPosX()) * (posX - player.getPosX())) + ((posY - player.getPosY()) * (posY - player.getPosY())));
 
@@ -22,29 +22,29 @@ public class LostSoul extends Actor{
         }
     }
 
-    public void idle() {
+    public void idle() {                                            ///Methode zum "Beleben" des Gegners
         Player player = Main.player;
 
         angle = Math.atan2(player.getPosY() - posY, player.getPosX() - posX);
 
-        if(player.getLife() <= 0) {
+        if(player.getLife() <= 0) {                                 //Aktualisierung der Spielerleben
             player.setLife(0);
         }
 
-        move(1, true);
+        move(1, true);                               //Bei identischer Position wird Spieler angegriffen
         if(((int) (player.getPosX()) == (int) (posX)) && ((int) (player.getPosY()) == (int) (posY))) {
             attack();
         }
     }
 
-    public void attack() {
+    public void attack() {                                          //Methode zum Angreifen des Spielers
         Player player = Main.player;
         Display display = Main.display;
 
         player.setLife(player.getLife() - 25);
 
         Main.face.setHurt();
-        if(player.getLife() <= 0) {
+        if(player.getLife() <= 0) {                                         //Aktualisiere gameState und Leben bei Tod des Spielers
             display.soundPlayer = new MediaPlayer(display.deathSound);
             display.setVolume(display.soundPlayer, Main.soundVolume);
             display.playSound(display.soundPlayer);
@@ -61,10 +61,9 @@ public class LostSoul extends Actor{
         display.soundPlayer = new MediaPlayer(display.painSound);
     }
 
-    public void die() {
+    public void die() {                                                         //Methode zum "Sterben" des Gegners
         Player player = Main.player;
         player.setScore(player.getScore() + 100);
-        System.out.println(player.getScore());
 
         Main.display.soundPlayer = new MediaPlayer(Main.display.lostSoulSound);
         Main.display.setVolume(Main.display.soundPlayer, Main.soundVolume);
@@ -76,7 +75,7 @@ public class LostSoul extends Actor{
         respawn();
     }
 
-    public void respawn() {
+    public void respawn() {                                                     //Methode um Gegner "neu zu erzeugen", wobei nur eine neue Position ausgewählt wird
         Map map = Main.map;
         Random randomizer = new Random();
         int x = randomizer.nextInt(map.getMapBorderX() - 1) + 1;

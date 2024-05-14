@@ -25,54 +25,58 @@ public class Display {
 
     // !!! Images und deren ImageViews !!!
     // !!! Chronologisch nach Aufruf   !!!
-    private Image hud;
-    private ImageView hudView;
-    private Image background;
-    private ImageView backgroundView;
-    private Image gameOver;
-    private ImageView gameOverView;
-    private Image score;
-    private ImageView scoreView;
-    private Image exit;
-    private ImageView exitView;
-    private Image credits;
-    private ImageView creditsView;
-    private Image ls1;
-    private ImageView ls1View;
-    private Image ls2;
-    private ImageView ls2View;
-    private Image credit;
-    private ImageView creditView;
-    private Image startBackground;
-    private ImageView startBackgroundView;
-    private Image fubar;
-    private ImageView fubarView;
-    private Image start;
-    private ImageView startView;
-    private Image settings;
-    private ImageView settingsView;
-    private Image musicImage;
-    private ImageView musicView;
-    private Image sound;
-    private ImageView soundView;
-    private Image gun;
-    private ImageView gunView;
+    private final Image hud;
+    private final ImageView hudView;
+    private final Image background;
+    private final ImageView backgroundView;
+    private final Image gameOver;
+    private final ImageView gameOverView;
+    private final Image score;
+    private final ImageView scoreView;
+    private final Image exit;
+    private final ImageView exitView;
+    private final Image credits;
+    private final ImageView creditsView;
+    private final Image ls1;
+    private final ImageView ls1View;
+    private final Image ls2;
+    private final ImageView ls2View;
+    private final Image credit;
+    private final ImageView creditView;
+    private final Image startBackground;
+    private final ImageView startBackgroundView;
+    private final Image fubar;
+    private final ImageView fubarView;
+    private final Image start;
+    private final ImageView startView;
+    private final Image settings;
+    private final ImageView settingsView;
+    private final Image musicImage;
+    private final ImageView musicView;
+    private final Image sound;
+    private final ImageView soundView;
+    private final Image gun;
+    private final ImageView gunView;
 
 
-    private Stage primaryStage, mapStage;
-    private Group root, mapRoot;
-    private Scene primaryScene, mapScene;
+    private final Stage primaryStage;
+    private final Group root;
+    private final Scene primaryScene;
 
-    private Random randomizer;
-    private Player player;
-    private LostSoul lostSoul;
-    private Line playerLine, enemyLine;
-    private Line[] lines;
-    private Line[] blackLines;
+    private final Random randomizer;
+    private final Player player;
+    private final LostSoul lostSoul;
+    private final Line playerLine;
+    private final Line enemyLine;
+    private final Line[] lines;
+    private final Line[] blackLines;
     public String[] soundFiles, musicFiles;
-    private Image lostSoulImage;
-    private ImageView lostSoulView;
-    private Text lifeOutline, lifeInline, scoreOutline, scoreInline;
+    private final Image lostSoulImage;
+    private final ImageView lostSoulView;
+    private final Text lifeOutline;
+    private final Text lifeInline;
+    private final Text scoreOutline;
+    private final Text scoreInline;
 
     // !!! Sounds und deren Player !!!
     // -- Sounds
@@ -88,9 +92,8 @@ public class Display {
     public Media music;
     public MediaPlayer musicPlayer;
 
-
+    // X- Koordinate des anzuzeigenden Gegners und der jeweilige Ray
     private Ray enemyRay;
-
     private double enemyX;
 
     private final int WIDTH = Main.SCREEN_WIDTH;
@@ -187,19 +190,16 @@ public class Display {
         primaryScene = new Scene(root, Color.rgb(91,0,0));
 
         primaryStage.getIcons().add(lostSoulImage);
-        primaryStage.setTitle("Fubar! - PreAlpha v0.2");
+        primaryStage.setTitle("Fubar! - v1.0");
         primaryStage.setWidth(WIDTH);
         primaryStage.setHeight(HEIGHT);
         primaryStage.setResizable(false);
-//        primaryStage.setX(Screen.getPrimary().getBounds().getWidth() / 2);
-//        primaryStage.setY(Screen.getPrimary().getBounds().getWidth() / 2);
         primaryStage.initStyle(StageStyle.UNDECORATED);
 
         primaryStage.setScene(primaryScene);
         primaryStage.show();
 
         startUpdateTimer();
-
     }
 
     private void startUpdateTimer() {
@@ -215,7 +215,7 @@ public class Display {
     }
 
     public void draw() {
-        if(Main.gameState == 1) {
+        if(Main.gameState == 1) {               //Je nach gameState werden verschiedene Anzeigen geladen
             drawMenu();
         }
         if(Main.gameState == 2) {
@@ -234,36 +234,32 @@ public class Display {
     }
 
     public void draw3D() {
-        root.getChildren().clear();
+        root.getChildren().clear();                                                                         //Leert die aktuelle scene
 
-        drawRect(0, (double) HEIGHT / 2, GAME_WIDTH, HEIGHT, Color.rgb(0,0,94), root);
-        for(int i = 0; i < Main.RAY_NUMBER; i++) {
+        drawRect(0, (double) HEIGHT / 2, GAME_WIDTH, HEIGHT, Color.rgb(0,0,94), root);  //Zeichnet den Himmel
+        for(int i = 0; i < Main.RAY_NUMBER; i++) {                                                          //Iteriert durch jeden Ray
             blackLines[i] = new Line();
             lines[i] = new Line();
             if(Main.rays[i] != null) {
                 Ray ray = Main.rays[i];
                 double rayLength = ray.getLength();
-                double x = i * 3 + 1;
+                double x = i * 3 + 1;                                                                       //Start-Koordinate X
 
-                // Höhe der Linie relativ zur Länge des Strahls berechnen
-                double lineHeight = (64 * HEIGHT) / rayLength;
+                double lineHeight = (64 * HEIGHT) / rayLength;                                              //Berechnet Höhe der Linie anhand der Länge des rays
 
-                // Sicherstellen, dass die Linie nicht über die Höhe des Bildschirms hinausgeht
                 if(lineHeight > HEIGHT) {
                     lineHeight = HEIGHT;
                 }
 
-                // Vertikalen Offset berechnen, um die Linie zentriert auf dem Bildschirm zu positionieren
-                double offset = (HEIGHT - lineHeight) / 2;
+                double offset = (HEIGHT - lineHeight) / 2;                                                  //Berechnet offset um Linie zentral anzuzeigen
 
-                // Start- und Endpunkte der Linie berechnen
-                double endY = HEIGHT - offset;
+                double endY = HEIGHT - offset;                                                              //End-Koordinate Y
 
                 // Linie zeichnen
-                drawLine(blackLines[i], x, offset + 1, x, endY - 1, 4, Color.BLACK, root);
-                drawLine(lines[i], x, offset, x, endY, 3, ray.getColor(), root);
+                drawLine(blackLines[i], x, offset + 1, x, endY - 1, 4, Color.BLACK, root); //Zeichnet schwarzen Hintergrund der Linie
+                drawLine(lines[i], x, offset, x, endY, 3, ray.getColor(), root);                       //Zeichnet Linie auf Hintergrund
 
-                if(ray.isHit()) {
+                if(ray.isHit()) {                                                                            //Wenn lostSoul im Sichtfeld ist, speichere ray
                     enemyRay = ray;
                     enemyX = x;
                 }
@@ -271,7 +267,7 @@ public class Display {
         }
         if(enemyRay != null) {
             if(enemyRay.isHit()) {
-                Main.lostSoul.show(enemyX, 300);
+                Main.lostSoul.show(enemyX, 300);                                                      //Zeichnet Gegner wenn im Sichtfeld
                 enemyRay = null;
             }
         }
@@ -280,7 +276,7 @@ public class Display {
     public void drawHUD() {
         int score = player.getScore();
         int life = player.getLife();
-        int xScore1 = WIDTH - 90,
+        int xScore1 = WIDTH - 90,                                                                              //Speichert Koordinaten der Lebensanzeige
                 xScore2 = WIDTH - 90,
                 yScore1 = HEIGHT / 5 * 4 + 25,
                 yScore2 = yScore1 - 3,
@@ -294,10 +290,10 @@ public class Display {
 
 
         drawPicture(hudView, WIDTH - 150, 0, root);
-        drawPicture(gunView, (double) GAME_WIDTH / 2 - 65, HEIGHT - 170, root);
+        drawPicture(gunView, (double) GAME_WIDTH / 2 - 65, HEIGHT - 142, root);
 
         // -- Lebensanzeige --
-        if(life == 100) {
+        if(life == 100) {                                                                                       //Berechnet je nach Wert neue Koordinaten
             xLife1 = WIDTH - 120;
             xLife2 = xLife1;
             yLife1 = HEIGHT / 5 + 10;
@@ -322,7 +318,7 @@ public class Display {
         drawText(xLife2, yLife2, String.valueOf(life), size2, Color.rgb(255, 0, 0), root);
 
         // -- Punkteanzeige --
-        if(player.getScore() >= 10000) {
+        if(player.getScore() >= 10000) {                                                                        //Berechnet je nach Wert neue Koordinaten
             drawText(GAME_WIDTH - 20, (double) HEIGHT / 5 * 4 + 7, "GODLIKE", 70, Color.rgb(94, 18, 36), root);
             drawText(GAME_WIDTH - 20 + 10, ((double) HEIGHT / 5 * 4) - 3 + 7, "GODLIKE", 60, Color.rgb(255, 0, 0), root);
         } else if(score <= 9) {
@@ -356,7 +352,7 @@ public class Display {
             drawText(GAME_WIDTH - 20 + 10, ((double) HEIGHT / 5 * 4) - 3 + 7, "GODLIKE", 60, Color.rgb(255, 0, 0), root);
         }
 
-        Main.face.idle();
+        Main.face.idle();                                                                                       //Ruft Methode zum Animieren des Gesichts auf
     }
 
     public void drawGameOver() {
@@ -367,7 +363,7 @@ public class Display {
         drawPicture(gameOverView, (double) WIDTH / 2 - 186, (double) HEIGHT / 5 * 1, root);
         drawPicture(scoreView, (double) WIDTH / 6 * 2 - 118, (double) HEIGHT / 4 * 2 - 60, root);
 
-        if(Main.menuSelection == 1) {
+        if(Main.menuSelection == 1) {                                                                       //Je nach ausgewählter Option werden Koordinaten für Zeiger berechnet
             drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 250 - 40, root);
             drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 250 - 40, root);
         }
@@ -382,10 +378,8 @@ public class Display {
 
         drawText((double) WIDTH / 6 * 4, (double) HEIGHT / 4 * 2, String.valueOf(player.getScore()), 100, Color.rgb(149, 0, 0), root);
 
-        if(Main.showCredits) {
+        if(Main.showCredits) {                                                                              //Zeigt Credits an
             root.getChildren().clear();
-
-
 
             drawPicture(backgroundView, 0, 0, root);
             drawPicture(creditsView, (double) WIDTH / 2 - 132, 50, root);
@@ -467,48 +461,17 @@ public class Display {
         drawText((double) WIDTH / 6 * 4 - 78, (double) HEIGHT / 4 * 2 + 100, String.valueOf(Main.soundVolume), 100, Color.rgb(183, 146, 56), root);
     }
 
-    public void playSound(MediaPlayer mediaPlayer){
+    public void playSound(MediaPlayer mediaPlayer){                                                           //Methode zum Abspielen von Musik/Sounds
         mediaPlayer.play();
     }
-    public void stopSound(MediaPlayer mediaPlayer){
+    public void stopSound(MediaPlayer mediaPlayer){                                                           //Methode zum Stoppen von Musik/Sounds
         mediaPlayer.stop();
     }
-    public void setVolume(MediaPlayer mediaPlayer, double percent) {
+    public void setVolume(MediaPlayer mediaPlayer, double percent) {                                          //Manipuliert Lautstärke der Musik/Sounds
         mediaPlayer.setVolume(percent / 100);
     }
 
-
-    public void drawRect(double x, double y, double width, double height, int state, Group group) {
-        Rectangle rect = new Rectangle();
-        rect.setX(x);
-        rect.setY(y);
-        rect.setWidth(width);
-        rect.setHeight(height);
-        switch(state) {
-            case 1:
-                rect.setFill(Color.rgb(159,0,0));
-                break;
-            case 2:
-                rect.setFill(Color.rgb(47,47,47));
-                break;
-            case 3:
-                rect.setFill(Color.rgb(107,71,39));
-                break;
-            case 4:
-                rect.setFill(Color.rgb(127, 0, 0));
-                break;
-            case 5:
-                rect.setFill(Color.rgb(135,67,7));
-                break;
-            case 6:
-                rect.setFill(Color.rgb(139,139,139));
-                break;
-            default:
-                rect.setFill(Color.BLACK);
-                break;
-        }
-        group.getChildren().add(rect);
-    }
+    //Folgende Methoden stellen Objecte je nach Parameter dar oder sind Überladungen bereits vorhandener Methoden
 
     public void drawRect(double x, double y, double width, double height, Color color, Group group) {
         Rectangle rect = new Rectangle();
@@ -520,7 +483,6 @@ public class Display {
 
         group.getChildren().add(rect);
     }
-
     public void drawRect(double x, double y, double width, double height, Color color, double opacity, Group group) {
         Rectangle rect = new Rectangle();
         rect.setX(x);
@@ -532,7 +494,6 @@ public class Display {
 
         group.getChildren().add(rect);
     }
-
     public void drawLine (Line line, double startX, double startY, double endX, double endY, double width, Color color, Group group){
         line.setStartX(startX);
         line.setStartY(startY);
@@ -542,7 +503,6 @@ public class Display {
         line.setStroke(color);
         group.getChildren().add(line);
     }
-
     public void drawText(double x, double y, String string, int size, Color color, Group group) {
         Text texts = new Text();
         texts.setX(x);
@@ -573,6 +533,8 @@ public class Display {
         view.setY(y - (imageHeight / 2));
         group.getChildren().add(view);
     }
+
+    // Getter / Setter Methoden für javafx Gruppe / Szene
 
     public Group getRoot() {
         return root;

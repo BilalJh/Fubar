@@ -20,19 +20,19 @@ public class Player extends Actor {
         setLife(100);
     }
 
-    public void regenerate() {
+    public void regenerate() {                                                  //Methode um Teil der Spielerleben zu generieren
         int random = randomizer.nextInt(10000);
-        System.out.println(Main.musicVolume);
 
         if(random == 0) {
             setLife(getLife() + 15);
         }
     }
 
-    public void fire() {
+    public void fire() {                                                        //Methode zum Schießen
         Main.engine.castShot();
     }
 
+    // -- Methoden für Timer
     public void setMark() {
         marker = System.currentTimeMillis();
     }

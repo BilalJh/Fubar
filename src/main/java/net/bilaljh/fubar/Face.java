@@ -5,6 +5,7 @@ import javafx.scene.image.ImageView;
 
 public class Face {
 
+    //SpriteSheets für Gesicht
     private String[][] standardSheet = {
             {
                 "file:src/resource/Standard/STFST00.png",
@@ -51,8 +52,8 @@ public class Face {
 
     private String current;
     private int bloodLevel;
-    private long marker;
-    private boolean isEvil;
+    private long marker;                    //Timer Vsriable
+    private boolean isEvil;                 //variablen für Gesichtsausdruck
     private boolean isHurt;
 
     public Face() {
@@ -62,10 +63,10 @@ public class Face {
         isHurt = false;
     }
 
-    public void idle() {
+    public void idle() {                    //Methode zum Animieren des Gesicht
         Player player = Main.player;
 
-        if(player.getLife() > 100) {
+        if(player.getLife() > 100) {                    //Je nach Anzahl der Leben wird Wert für Blut im Gesicht geändert
             current = god;
         } else if(player.getLife() >= 80) {
             bloodLevel = 0;
@@ -87,13 +88,13 @@ public class Face {
             current = dead;
         }
 
-        if(isEvil) {
+        if(isEvil) {                                    //Bei Abschuss vom Gegner besonderer Ausdrück
             if(System.currentTimeMillis() - marker > 1000) {
                 isEvil = false;
             } else {
                 drawFace(evil[bloodLevel]);
             }
-        } else if(isHurt) {
+        } else if(isHurt) {                             //Bei Schaden besonderer Ausdrück
             if(System.currentTimeMillis() - marker > 1000) {
                 isHurt = false;
             } else {
@@ -104,7 +105,7 @@ public class Face {
         }
     }
 
-    public void drawFace(String currentString) {
+    public void drawFace(String currentString) {        //Methode zum Zeichnen des Gesichts
         Image face = new Image(currentString);
         ImageView faceView = new ImageView(face);
         Main.display.drawPicture(faceView, Main.SCREEN_WIDTH - 75 - 45, Main.SCREEN_HEIGHT / 2 - 52, Main.display.getRoot());
@@ -119,7 +120,8 @@ public class Face {
         setMark();
     }
 
-    public void setMark() {
+
+    public void setMark() {                             //Methode zum Speichern der Zeit
         marker = System.currentTimeMillis();
     }
 }

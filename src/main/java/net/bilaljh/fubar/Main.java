@@ -20,14 +20,17 @@ public class Main extends Application {
     public static Face face;
     public static Map map;
 
+
+    // Konstanten für Bildschirmgröße
     public static final int RAY_NUMBER = 360;
     public static final int SCREEN_HEIGHT = 640;
     public static final int SCREEN_WIDTH = 1205;
     public static final int GAME_WIDTH = 1080;
-    public static final boolean DEVELOPER_MODE = true;
 
-    public static int menuSelection;                            //1 = restart, 2 = credits, 3 = exit
-    public static int gameState;                                //1 = menu,    2 = ongoing, 3 = gameOver, 4 = settings
+    public static int menuSelection;                            //Aktuelle Auswahl
+                                                                //1 = restart, 2 = credits, 3 = exit
+    public static int gameState;                                //Aktueller Zustand im Spiel
+                                                                //1 = menu,    2 = ongoing, 3 = gameOver, 4 = settings
     public static int randomScreen, soundVolume, musicVolume;
     public static boolean showCredits;
 
@@ -35,11 +38,11 @@ public class Main extends Application {
 
 
     public static void main(String[] args) {
-        Application.launch(args);
+        Application.launch(args);                               //Startet die JavaFX-RuntimeEnvironment und erstellt eine Instanz vom Typ Application.class
     }
 
     @Override
-    public void start(Stage stage){
+    public void start(Stage stage){                              //Methode zum Starten, gewissermaßen ein Pseuso Konstruktor
         randomizer = new Random();
         map = new Map();
         engine = new Raycaster();
@@ -56,32 +59,32 @@ public class Main extends Application {
         musicVolume = 50;
         showCredits = false;
 
-
+        display.setVolume(display.soundPlayer, 50);
+        display.setVolume(display.musicPlayer, 50);
         display.playSound(display.musicPlayer);
 
-
         controls();
-        Platform.runLater(() -> {
+        Platform.runLater(() -> {                               //Verschiebt display Instanz auf den JavaFX Thread
             Main.display.draw();
         });
     }
 
     public void controls() {
-        Main.display.getPrimaryScene().setOnKeyPressed(event -> {
+        Main.display.getPrimaryScene().setOnKeyPressed(event -> {   //Eventhandler zur Steuerung
             KeyCode keyCode = event.getCode();
-            if(gameState == 2) {
+            if(gameState == 2) {                                    //Steuerung im Spiel, also WASD QE und Space zur Fortbewegung und zum Schießen
                 switch(keyCode) {
                     case W:
                         player.move(10, false);
                         break;
                     case A:
-                        player.setAngle(player.getAngle()-Math.toRadians(7));
+                        player.setAngle(player.getAngle()-Math.toRadians(7));   //Manipuliert Winkel des Spielers
                         if(player.getAngle() <= 0) {
                             player.setAngle(Math.toRadians(360));
                         }
                         break;
                     case S:
-                        player.move(-10, false);
+                        player.move(-10, false);                //Bewegt Spieler
                         break;
                     case D:
                         player.setAngle(player.getAngle()+Math.toRadians(7));
@@ -95,7 +98,7 @@ public class Main extends Application {
                     case E:
                         player.move(10, "right");
                         break;
-                    case SPACE:
+                    case SPACE:                                                //Lässt Spieler mit einem Cooldown von einer Sekunde schießen und lässt Sounds abspielen
                         if(System.currentTimeMillis() - player.getMarker() > 1000) {
                             player.fire();
                             player.setMark();
@@ -109,7 +112,7 @@ public class Main extends Application {
                         break;
                 }
             }
-            else if(gameState == 1) {
+            else if(gameState == 1) {                                           //Steuerung von UI Elementen im Startmenü mithilfe von Pfeiltasten + Abspielen von Sounds
                 switch(keyCode) {
                     case UP:
                         if(menuSelection > 1) {
@@ -132,9 +135,9 @@ public class Main extends Application {
                     case SPACE:
                         if(menuSelection == 1) {
                             if(showCredits) {
-                                showCredits = false;
+                                showCredits = false;            //Schließt Dankaussagungen
                             }
-                            gameState = 2;
+                            gameState = 2;                      //Versetzt Spiel in Zustand 2
                             display.setVolume(display.soundPlayer, musicVolume);
                             display.playSound(display.soundPlayer);
                             display.stopSound(display.musicPlayer);
@@ -145,7 +148,7 @@ public class Main extends Application {
                             display.playSound(display.musicPlayer);
                             showCredits = false;
                         } else if(menuSelection == 2) {
-                            gameState = 4;
+                            gameState = 4;                      //Versetzt Spiel in Zustand 4
                             showCredits = false;
                             display.soundPlayer = new MediaPlayer(display.startSound);
                             display.setVolume(display.soundPlayer, soundVolume);
@@ -153,20 +156,20 @@ public class Main extends Application {
                             display.soundPlayer = new MediaPlayer(display.startSound);
                         } else if(menuSelection == 3){
                             menuSelection = 3;
-                            showCredits = !showCredits;
+                            showCredits = !showCredits;         //Öffnet Dankaussagungen
                             display.soundPlayer = new MediaPlayer(display.startSound);
                             display.setVolume(display.soundPlayer, soundVolume);
                             display.playSound(display.soundPlayer);
                             display.soundPlayer = new MediaPlayer(display.startSound);
                         } else if(menuSelection == 4) {
-                            System.exit(0);
+                            System.exit(0);                //Schließt das Spiel
                         }
                         break;
                     default:
                         break;
                 }
             }
-            else if(gameState == 3) {
+            else if(gameState == 3) {                              //Steuerung von UI Elementen im GameOverScreen mithilfe von Pfeiltasten + Abspielen von Sounds
                 switch(keyCode) {
                     case UP:
                         if(menuSelection != 1) {
@@ -198,7 +201,7 @@ public class Main extends Application {
                         }
                         break;
                 }
-            } else if(gameState == 4) {
+            } else if(gameState == 4) {                         //Steuerung von UI Elementen in den Einstellungen mithilfe von Pfeiltasten + Abspielen von Sounds
                 switch(keyCode) {
                     case UP:
                         if(menuSelection > 1) {
@@ -227,7 +230,10 @@ public class Main extends Application {
                         } else if(menuSelection == 2) {
                             if(soundVolume != 0) {
                                 soundVolume -= 10;
-                                display.setVolume(display.soundPlayer, musicVolume);
+                                display.stopSound(display.soundPlayer);
+                                display.soundPlayer = new MediaPlayer(display.startSound);
+                                display.setVolume(display.soundPlayer, soundVolume);
+                                display.playSound(display.soundPlayer);
                             }
                         }
                         break;
@@ -240,7 +246,10 @@ public class Main extends Application {
                         } else if(menuSelection == 2) {
                             if(soundVolume != 100) {
                                 soundVolume += 10;
-                                display.setVolume(display.soundPlayer, musicVolume);
+                                display.stopSound(display.soundPlayer);
+                                display.soundPlayer = new MediaPlayer(display.startSound);
+                                display.setVolume(display.soundPlayer, soundVolume);
+                                display.playSound(display.soundPlayer);
                             }
                         }
                         break;

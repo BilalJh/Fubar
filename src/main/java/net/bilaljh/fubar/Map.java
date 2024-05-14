@@ -31,14 +31,9 @@ public class Map {
         if(lostSoulSpawnY > mapBorderY) {
             lostSoulSpawnY--;
         }
-
-        System.out.println("lostSoulSpawnX: " + lostSoulSpawnX + ", lostSoulSpawnY: " + lostSoulSpawnY);
         playerSpawnX = mapBorderX / 2;
         playerSpawnY = mapBorderY / 2;
 
-        if(Main.DEVELOPER_MODE) {
-            System.out.println(mapBorderX + ", " + mapBorderY);
-        }
 
         createWorld();
         generateObstacles();

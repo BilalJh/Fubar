@@ -128,8 +128,6 @@ public class Display {
         musicFiles = new String[] {
                 "src/resource/Soundtrack/Music/DoomEternal.wav",
                 "src/resource/Soundtrack/Music/AtDoomsGate.wav",
-                "src/resource/Soundtrack/Music/TheOnlyThingTheyFearIsYou.wav",
-                "src/resource/Soundtrack/Music/OnTheHunt.wav"
         };
 
         // !!! Sounds und deren Player !!!

@@ -141,7 +141,7 @@ public class Main extends Application {
                             display.setVolume(display.soundPlayer, musicVolume);
                             display.playSound(display.soundPlayer);
                             display.stopSound(display.musicPlayer);
-                            display.music = new Media(new File(display.musicFiles[randomizer.nextInt(3) + 1]).toURI().toString());
+                            display.music = new Media(new File(display.musicFiles[1]).toURI().toString());
                             display.musicPlayer = new MediaPlayer(display.music);
                             display.setVolume(display.musicPlayer, Main.musicVolume);
                             display.musicPlayer.setAutoPlay(true);
@@ -213,7 +213,7 @@ public class Main extends Application {
                         }
                         break;
                     case DOWN:
-                        if(menuSelection < 4) {
+                        if(menuSelection < 3) {
                             menuSelection++;
                             display.soundPlayer = new MediaPlayer(display.itemSound);
                             display.setVolume(display.soundPlayer , soundVolume);

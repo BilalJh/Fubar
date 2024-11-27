@@ -108,7 +108,7 @@ public class Face {
     public void drawFace(String currentString) {        //Methode zum Zeichnen des Gesichts
         Image face = new Image(currentString);
         ImageView faceView = new ImageView(face);
-        Main.display.drawPicture(faceView, Main.SCREEN_WIDTH - 75 - 45, Main.SCREEN_HEIGHT / 2 - 52, Main.display.getRoot());
+        Main.display.drawPicture(faceView, Main.GAME_WIDTH + Display.calcNewWidth(150, 640, Main.SCREEN_HEIGHT) / 2.0 - Display.calcNewWidth(100, 128, 128 * (Main.SCREEN_HEIGHT / 640.0)) / 2.0 , Main.SCREEN_HEIGHT / 2.0 - Display.calcNewHeight(100) / 2.0, Display.calcNewHeight(128), 100, 128, Main.display.getRoot());
     }
 
     public void setEvil() {

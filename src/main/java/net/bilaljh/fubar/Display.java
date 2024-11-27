@@ -12,9 +12,9 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.Screen;
 
 import java.io.File;
 import java.util.Random;
@@ -25,6 +25,8 @@ public class Display {
 
     // !!! Images und deren ImageViews !!!
     // !!! Chronologisch nach Aufruf   !!!
+    private final Image screenBackground;
+    private final ImageView screenBackgroundView;
     private final Image hud;
     private final ImageView hudView;
     private final Image background;
@@ -99,6 +101,7 @@ public class Display {
     private final int WIDTH = Main.SCREEN_WIDTH;
     private final int HEIGHT = Main.SCREEN_HEIGHT;
     private final int GAME_WIDTH = Main.GAME_WIDTH;
+    private final int GAMEX = (int) (Screen.getPrimary().getBounds().getHeight() - (Screen.getPrimary().getBounds().getHeight() - HEIGHT));
 
 
     public Display() {
@@ -127,7 +130,7 @@ public class Display {
         };
         musicFiles = new String[] {
                 "src/resource/Soundtrack/Music/DoomEternal.wav",
-                "src/resource/Soundtrack/Music/AtDoomsGate.wav",
+                "src/resource/Soundtrack/Music/FUBAR!.wav",
         };
 
         // !!! Sounds und deren Player !!!
@@ -143,11 +146,14 @@ public class Display {
         // -- Musik
         music = new Media(new File(musicFiles[0]).toURI().toString());
         musicPlayer = new MediaPlayer(music);
+        musicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         musicPlayer.setAutoPlay(true);
 
         // !!! Images und deren ImageViews !!!
         // !!! Chronologisch nach Aufruf   !!!
         {
+            screenBackground = new Image("file:src/resource/StartMenu/Background.png");
+            screenBackgroundView = new ImageView(screenBackground);
             hud = new Image("file:src/resource/Hud.png");
             hudView = new ImageView(hud);
             background = new Image("file:src/resource/GameOver/Background.png");
@@ -192,6 +198,7 @@ public class Display {
         primaryStage.setWidth(WIDTH);
         primaryStage.setHeight(HEIGHT);
         primaryStage.setResizable(false);
+        primaryStage.setFullScreen(true);
         primaryStage.initStyle(StageStyle.UNDECORATED);
 
         primaryStage.setScene(primaryScene);
@@ -231,44 +238,136 @@ public class Display {
         }
     }
 
-    public void draw3D() {
-        root.getChildren().clear();                                                                         //Leert die aktuelle scene
+    public void drawMenu() {
+        root.getChildren().clear();
 
-        drawRect(0, (double) HEIGHT / 2, GAME_WIDTH, HEIGHT, Color.rgb(0,0,94), root);  //Zeichnet den Himmel
-        for(int i = 0; i < Main.RAY_NUMBER; i++) {                                                          //Iteriert durch jeden Ray
+        drawPicture(screenBackgroundView, 0, GAMEX, WIDTH, HEIGHT, HEIGHT, root);
+        drawPicture(backgroundView,0, 0, Main.SCREEN_HEIGHT, 1280, 720, root);
+        drawRect(0, 0, WIDTH, Screen.getPrimary().getBounds().getHeight(), Color.rgb(0, 0, 0), 0.6, root);
+        drawPicture(fubarView, (double) WIDTH / 2 - 168, (double) HEIGHT / 4 * 1 - 60, root);
+
+        double lsX1 = WIDTH * (1.0/3.0) - 100;
+        double lsX2 = WIDTH * (2.0/3.0);
+        double lsY;
+        if(Main.menuSelection == 1) {
+            lsY = HEIGHT - 350 - 40;
+        } else if(Main.menuSelection == 2) {
+            lsY = HEIGHT - 270 - 40;
+        } else if(Main.menuSelection == 3) {
+            lsY = HEIGHT - 190 - 40;
+        } else {
+            lsY = HEIGHT - 110 - 40;
+        }
+
+        drawPicture(ls1View, lsX1, lsY, root);
+        drawPicture(ls2View, lsX2, lsY, root);
+
+        drawPicture(startView, (double) WIDTH / 2 - 99, HEIGHT - 350, root);
+        drawPicture(settingsView, (double) WIDTH / 2 - 150, HEIGHT - 270, root);
+        drawPicture(creditsView, (double) WIDTH / 2 - 132, HEIGHT - 190, root);
+        drawPicture(exitView, (double) WIDTH / 2 - 69, HEIGHT - 110, root);
+
+        if(Main.showCredits) {
+            root.getChildren().clear();
+
+            drawPicture(backgroundView, 0, 0, root);
+            drawPicture(screenBackgroundView, 0, GAMEX, WIDTH, HEIGHT, HEIGHT, root);
+            drawRect(0, 0, WIDTH, Screen.getPrimary().getBounds().getHeight(), Color.rgb(0, 0, 0), 0.6, root);
+            drawPicture(creditsView,WIDTH / 2.0 - 132, (double) HEIGHT / 4 * 1 - 60, root);
+            drawPicture(creditView,WIDTH / 2.0 - calcNewWidth(1680, 552, HEIGHT - HEIGHT * (4.5/10.0)) / 2.0, HEIGHT * (3.5/10.0), HEIGHT - HEIGHT * (4.5/10.0), 1680, 552, root);
+        }
+    }
+
+    public void drawSettings() {
+        root.getChildren().clear();
+
+        drawPicture(backgroundView, 0, 0, root);
+        drawPicture(screenBackgroundView, 0, GAMEX, WIDTH, HEIGHT, HEIGHT, root);
+        drawRect(0, 0, WIDTH, Screen.getPrimary().getBounds().getHeight(), Color.rgb(0, 0, 0), 0.6, root);
+        drawPicture(settingsView, (double) WIDTH / 2 - 150, (double) HEIGHT / 4 * 1 - 60, root);
+
+        double newHeight = calcNewHeight(107);
+        double lsX1 = (double) WIDTH / 6 * 4;
+        double lsX2 = (double) WIDTH / 6 * 4 - calcNewWidth(225);
+        double lsY;
+
+        if(Main.menuSelection == 1) {
+            lsY = HEIGHT / 5.0 * 2 + 60 - 107;
+            lsX1 = WIDTH / 6.0 * 4 - 40 - 150;
+            lsX2 = WIDTH / 6.0 * 4 + 50 - 50;
+        } else if(Main.menuSelection == 2) {
+            lsY = HEIGHT / 5.0 * 3 + 60 - 107;
+            lsX1 = WIDTH / 6.0 * 4 - 40 - 150;
+            lsX2 = WIDTH / 6.0 * 4 + 50 - 50;
+        } else {
+            lsY = HEIGHT - 110 - 53;
+            lsX1 = WIDTH * (1.0/3.0) - 100;
+            lsX2 = WIDTH * (2.0/3.0);
+        }
+        drawPicture(ls1View, lsX1, lsY, root);
+        drawPicture(ls2View, lsX2, lsY, root);
+
+        drawPicture(musicView, (double) WIDTH / 6 * 2 - calcNewWidth(118), HEIGHT / 5.0 * 2, root);
+        drawPicture(soundView, (double) WIDTH / 6 * 2 - calcNewWidth(118), HEIGHT / 5.0 * 3, root);
+        drawPicture(exitView, (double) WIDTH / 2 - 69, HEIGHT - 110, root);
+
+        drawText(WIDTH / 6.0 * 4 - 78, HEIGHT / 5.0 * 2 + 60, String.valueOf(Main.musicVolume), 100, Color.rgb(183, 146, 56), root);
+        drawText(WIDTH / 6.0 * 4 - 78, HEIGHT / 5.0 * 3 + 60, String.valueOf(Main.soundVolume), 100, Color.rgb(183, 146, 56), root);
+        drawRect(WIDTH / 6.0 * 4 - 78, HEIGHT / 5.0 * 2 + 60, 10, 1, Color.BLUE, root);
+    }
+
+    public void draw3D() {
+        root.getChildren().clear(); // Leert die aktuelle Scene
+
+        double screenHeight = Main.SCREEN_HEIGHT; // Dynamische Bildschirmhöhe
+        double screenWidth = Main.GAME_WIDTH;  // Dynamische Bildschirmbreite
+
+        // Berechnung der dynamischen Linienbreiten
+        double lineWidth = 3 * (screenWidth / 1080);     // Proportionale Breite für Linien
+        double backgroundLineWidth = 4 * (screenWidth / 1080); // Proportionale Breite für den Hintergrund
+
+        drawRect(0, screenHeight / 2, screenWidth, screenHeight, Color.rgb(0, 0, 94), root); // Zeichnet den Himmel
+
+        for (int i = 0; i < Main.RAY_NUMBER; i++) { // Iteriere durch jeden Ray
             blackLines[i] = new Line();
             lines[i] = new Line();
-            if(Main.rays[i] != null) {
+
+            if (Main.rays[i] != null) {
                 Ray ray = Main.rays[i];
                 double rayLength = ray.getLength();
-                double x = i * 3 + 1;                                                                       //Start-Koordinate X
+                double x = i * (screenWidth / Main.RAY_NUMBER) + 1; // Proportionale X-Start-Koordinate
 
-                double lineHeight = (64 * HEIGHT) / rayLength;                                              //Berechnet Höhe der Linie anhand der Länge des rays
+                // Berechnet die Höhe der Linie anhand der Ray-Länge
+                double lineHeight = (64 * screenHeight) / rayLength;
 
-                if(lineHeight > HEIGHT) {
-                    lineHeight = HEIGHT;
+                // Linie darf nicht größer als Bildschirmhöhe sein
+                if (lineHeight > screenHeight) {
+                    lineHeight = screenHeight;
                 }
 
-                double offset = (HEIGHT - lineHeight) / 2;                                                  //Berechnet offset um Linie zentral anzuzeigen
+                double offset = (screenHeight - lineHeight) / 2; // Offset, um Linie zentral zu platzieren
+                double endY = screenHeight - offset;            // End-Koordinate Y
 
-                double endY = HEIGHT - offset;                                                              //End-Koordinate Y
+                // Zeichne Linie mit angepasster Breite
+                drawLine(blackLines[i], x, offset + 1, x, endY - 1, backgroundLineWidth, Color.BLACK, root); // Schwarzer Hintergrund
+                drawLine(lines[i], x, offset, x, endY, lineWidth, ray.getColor(), root);                    // Linie im Vordergrund
 
-                // Linie zeichnen
-                drawLine(blackLines[i], x, offset + 1, x, endY - 1, 4, Color.BLACK, root); //Zeichnet schwarzen Hintergrund der Linie
-                drawLine(lines[i], x, offset, x, endY, 3, ray.getColor(), root);                       //Zeichnet Linie auf Hintergrund
-
-                if(ray.isHit()) {                                                                            //Wenn lostSoul im Sichtfeld ist, speichere ray
+                // Wenn ein Gegner im Sichtfeld ist
+                if (ray.isHit()) {
                     enemyRay = ray;
                     enemyX = x;
                 }
             }
         }
-        if(enemyRay != null) {
-            if(enemyRay.isHit()) {
-                Main.lostSoul.show(enemyX, 300);                                                      //Zeichnet Gegner wenn im Sichtfeld
+
+        // Gegner anzeigen, wenn getroffen
+        if (enemyRay != null) {
+            if (enemyRay.isHit()) {
+                Main.lostSoul.show(enemyX, screenHeight * 0.5); // Gegner relativ zur Bildschirmhöhe zeichnen
                 enemyRay = null;
             }
         }
+        drawPicture(screenBackgroundView, 0, GAMEX, WIDTH, HEIGHT, HEIGHT, root);
     }
 
     public void drawHUD() {
@@ -285,10 +384,22 @@ public class Display {
                 yLife1 = HEIGHT / 5 + 10,
                 yLife2 = yLife1 - 3;
 
+        drawPicture(hudView, Main.GAME_WIDTH, 0, Main.SCREEN_HEIGHT, 150, 640, root);
+
+        // Berechne die neue Höhe der Waffe basierend auf der aktuellen Bildschirmhöhe
+        double newHeight = 142 * (Main.SCREEN_HEIGHT / 640.0);
+
+        // Berechne die neue Breite basierend auf der neuen Höhe, um das Seitenverhältnis zu erhalten
+        double newWeaponWidth = calcNewWidth(130, 142, newHeight);
 
 
-        drawPicture(hudView, WIDTH - 150, 0, root);
-        drawPicture(gunView, (double) GAME_WIDTH / 2 - 65, HEIGHT - 142, root);
+        // Berechne die Positionen und rufe drawPicture auf
+        // Rufe die drawPicture-Methode auf und setze die Bildposition und -größe
+        drawPicture(gunView, Main.GAME_WIDTH / 2.0 - newWeaponWidth / 2.0 - calcNewWidth(13), Main.SCREEN_HEIGHT - newHeight, newHeight, 130, 142, root);
+
+        drawLine(new Line(), GAME_WIDTH / 2.0, HEIGHT / 2.0 - HEIGHT / 100.0 * 1.7, GAME_WIDTH / 2.0, HEIGHT / 2.0 + HEIGHT / 100.0 * 1.7, 5, Color.BLACK, root);
+        drawLine(new Line(), GAME_WIDTH / 2.0 - GAME_WIDTH / 100.0 * 1, HEIGHT / 2.0, GAME_WIDTH / 2.0 + GAME_WIDTH / 100.0 * 1, HEIGHT / 2.0, 5, Color.BLACK, root);
+
 
         // -- Lebensanzeige --
         if(life == 100) {                                                                                       //Berechnet je nach Wert neue Koordinaten
@@ -357,18 +468,24 @@ public class Display {
         root.getChildren().clear();
 
         drawPicture(backgroundView, 0, 0, root);
+        drawPicture(screenBackgroundView, 0, GAMEX, WIDTH, HEIGHT, HEIGHT, root);
+        drawRect(0, 0, WIDTH, Screen.getPrimary().getBounds().getHeight(), Color.rgb(0, 0, 0), 0.6, root);
 
         drawPicture(gameOverView, (double) WIDTH / 2 - 186, (double) HEIGHT / 5 * 1, root);
         drawPicture(scoreView, (double) WIDTH / 6 * 2 - 118, (double) HEIGHT / 4 * 2 - 60, root);
 
+        double newHeight = 107 * (Main.SCREEN_HEIGHT / 1440.0);
+        //double lsX = ;
+        //double lsY = ;
+
         if(Main.menuSelection == 1) {                                                                       //Je nach ausgewählter Option werden Koordinaten für Zeiger berechnet
-            drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 250 - 40, root);
-            drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 250 - 40, root);
+            drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 250 - 40, newHeight, 100, 107, root);
+            drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 250 - 40, newHeight, 100, 107, root);
         }
 
         if(Main.menuSelection == 2) {
-            drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 150 - 40, root);
-            drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 150 - 40, root);
+            drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 150 - 40, newHeight, 100, 107, root);
+            drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 150 - 40, newHeight, 100, 107, root);
         }
 
         drawPicture(exitView, (double) WIDTH / 2 - 69, HEIGHT - 250, root);
@@ -380,85 +497,12 @@ public class Display {
             root.getChildren().clear();
 
             drawPicture(backgroundView, 0, 0, root);
-            drawPicture(creditsView, (double) WIDTH / 2 - 132, 50, root);
-            drawPicture(creditView, (double) WIDTH / 2 - 595, (double) HEIGHT / 2 - 192, root);
+            drawPicture(screenBackgroundView, 0, GAMEX, WIDTH, HEIGHT, HEIGHT, root);
+            drawRect(0, 0, WIDTH, Screen.getPrimary().getBounds().getHeight(), Color.rgb(0, 0, 0), 0.6, root);
+            drawPicture(creditsView, (double) WIDTH / 2 - 132, (double) HEIGHT / 4 * 1 - 60, root);
+            drawPicture(creditView,WIDTH / 2.0 - calcNewWidth(1680, 552, HEIGHT - HEIGHT * (4.5/10.0)) / 2.0, HEIGHT * (3.5/10.0), HEIGHT - HEIGHT * (4.5/10.0), 1680, 552, root);
         }
     }
-
-    public void drawMenu() {
-        root.getChildren().clear();
-
-
-        drawPicture(backgroundView,0, 0, root);
-        drawRect(0, 0, WIDTH, HEIGHT, Color.rgb(0, 0, 0), 0.6, root);
-        drawPicture(fubarView, (double) WIDTH / 2 - 168, (double) HEIGHT / 4 * 1 - 60, root);
-
-        if(Main.menuSelection == 1) {
-            drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 350 - 40, root);
-            drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 350 - 40, root);
-        }
-
-        if(Main.menuSelection == 2) {
-            drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 270 - 40, root);
-            drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 270 - 40, root);
-        }
-
-        if(Main.menuSelection == 3) {
-            drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 190 - 40, root);
-            drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 190 - 40, root);
-        }
-
-        if(Main.menuSelection == 4) {
-            drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 110 - 40, root);
-            drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 110 - 40, root);
-        }
-
-        drawPicture(startView, (double) WIDTH / 2 - 99, HEIGHT - 350, root);
-        drawPicture(settingsView, (double) WIDTH / 2 - 150, HEIGHT - 270, root);
-        drawPicture(creditsView, (double) WIDTH / 2 - 132, HEIGHT - 190, root);
-        drawPicture(exitView, (double) WIDTH / 2 - 69, HEIGHT - 110, root);
-
-        if(Main.showCredits) {
-            root.getChildren().clear();
-
-            drawPicture(backgroundView, 0, 0, root);
-            drawRect(0, 0, WIDTH, HEIGHT, Color.rgb(0, 0, 0), 0.6, root);
-            drawPicture(creditsView, (double) WIDTH / 2 - 132, 50, root);
-            drawPicture(creditView, (double) WIDTH / 2 - 595, (double) HEIGHT / 2 - 192, root);
-        }
-    }
-
-    public void drawSettings() {
-        root.getChildren().clear();
-
-        drawPicture(backgroundView, 0, 0, root);
-        drawRect(0, 0, WIDTH, HEIGHT, Color.rgb(0, 0, 0), 0.6, root);
-        drawPicture(settingsView, (double) WIDTH / 2 - 150, 100, root);
-
-        drawPicture(musicView, (double) WIDTH / 6 * 2 - 118, (double) HEIGHT / 4 * 2 - 100, root);
-        drawPicture(soundView, (double) WIDTH / 6 * 2 - 118, (double) HEIGHT / 4 * 2 + 40, root);
-        drawPicture(exitView, (double) WIDTH / 2 - 69, HEIGHT - 150, root);
-
-
-        if(Main.menuSelection == 1) {
-            drawPicture(ls1View, (double) WIDTH / 6 * 4 - 78 - 120, (double) HEIGHT / 4 * 2 - 100 - 40, root);
-            drawPicture(ls2View, (double) WIDTH / 6 * 4 - 78 + 75, (double) HEIGHT / 4 * 2 - 100 - 40, root);
-        }
-
-        if(Main.menuSelection == 2) {
-            drawPicture(ls1View, (double) WIDTH / 6 * 4 - 78 - 120, (double) HEIGHT / 4 * 2, root);
-            drawPicture(ls2View, (double) WIDTH / 6 * 4 - 78 + 75, (double) HEIGHT / 4 * 2, root);
-        }
-
-        if(Main.menuSelection == 3) {
-            drawPicture(ls1View, (double) WIDTH / 2 - 138 - 40, HEIGHT - 150 - 40, root);
-            drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 199, HEIGHT - 150 - 40, root);
-        }
-
-        drawText((double) WIDTH / 6 * 4 - 78, (double) HEIGHT / 4 * 2 - 40, String.valueOf(Main.musicVolume), 100, Color.rgb(183, 146, 56), root);
-        drawText((double) WIDTH / 6 * 4 - 78, (double) HEIGHT / 4 * 2 + 100, String.valueOf(Main.soundVolume), 100, Color.rgb(183, 146, 56), root);
-    }
-
     public void playSound(MediaPlayer mediaPlayer){                                                           //Methode zum Abspielen von Musik/Sounds
         mediaPlayer.play();
     }
@@ -469,7 +513,7 @@ public class Display {
         mediaPlayer.setVolume(percent / 100);
     }
 
-    //Folgende Methoden stellen Objecte je nach Parameter dar oder sind Überladungen bereits vorhandener Methoden
+    //Folgende Methoden stellen Objekte je nach Parameter dar oder sind Überladungen bereits vorhandener Methoden
 
     public void drawRect(double x, double y, double width, double height, Color color, Group group) {
         Rectangle rect = new Rectangle();
@@ -516,7 +560,38 @@ public class Display {
         view.setX(x);
         view.setY(y);
 
+        view.setPreserveRatio(true);
+
         group.getChildren().add(view);
+    }
+
+    public void drawPicture(ImageView view, double x, double y, double newHeight, double ogX, double ogY, Group group) {
+        view.setX(x);
+        view.setY(y);
+
+        //view.setPreserveRatio(true);
+
+        // Berechne die Breite basierend auf der neuen Höhe und setze die Breite
+        view.setFitWidth(calcNewWidth(ogX, ogY, newHeight)); // Skalierung der Breite entsprechend der neuen Höhe
+        view.setFitHeight(newHeight); // Setzt die Höhe des Bildes
+
+        group.getChildren().add(view);
+    }
+
+    public static int calcNewWidth(double width, double height, double newHeight) {
+        return (int) (width * (newHeight / height));
+    }
+
+    public static int calcNewHeight(double height, double width, double newWidth) {
+        return (int) (height * (newWidth / width));
+    }
+
+    public static int calcNewWidth(double width) {
+        return (int) (width * (Main.SCREEN_WIDTH / 1205.0));
+    }
+
+    public static int calcNewHeight(double height) {
+        return (int) (height * (Main.SCREEN_HEIGHT / 640.0));
     }
 
     public void drawEnemy(String file, double x, double y, double distance, Group group) {

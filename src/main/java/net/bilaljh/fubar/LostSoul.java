@@ -31,7 +31,7 @@ public class LostSoul extends Actor{
             player.setLife(0);
         }
 
-        move(1, true);                               //Bei identischer Position wird Spieler angegriffen
+        move(1.7, true);                               //Bei identischer Position wird Spieler angegriffen
         if(((int) (player.getPosX()) == (int) (posX)) && ((int) (player.getPosY()) == (int) (posY))) {
             attack();
         }

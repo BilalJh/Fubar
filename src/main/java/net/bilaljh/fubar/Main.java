@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -21,11 +22,15 @@ public class Main extends Application {
     public static Map map;
 
 
-    // Konstanten für Bildschirmgröße
+    // Variablen für Bildschirmgröße
+    public static int height = (int) Screen.getPrimary().getBounds().getHeight();
+    public static int width = (int) Screen.getPrimary().getBounds().getWidth();
+    //public static int height = 1000;
+    //public static int width = 1000;
+    public static int SCREEN_HEIGHT;
+    public static int SCREEN_WIDTH;
+    public static int GAME_WIDTH;
     public static final int RAY_NUMBER = 360;
-    public static final int SCREEN_HEIGHT = 640;
-    public static final int SCREEN_WIDTH = 1205;
-    public static final int GAME_WIDTH = 1080;
 
     public static int menuSelection;                            //Aktuelle Auswahl
                                                                 //1 = restart, 2 = credits, 3 = exit
@@ -38,6 +43,17 @@ public class Main extends Application {
 
 
     public static void main(String[] args) {
+
+        if(width >= height) {
+            SCREEN_HEIGHT = (int) (9.0/16.0 * width);
+            SCREEN_WIDTH = width;
+        } else {
+            SCREEN_WIDTH = (int) (16.0/9.0 * height);
+            SCREEN_HEIGHT = height;
+        }
+
+        GAME_WIDTH = SCREEN_WIDTH - Display.calcNewWidth(150, 640, SCREEN_HEIGHT);
+
         Application.launch(args);                               //Startet die JavaFX-RuntimeEnvironment und erstellt eine Instanz vom Typ Application.class
     }
 
@@ -143,6 +159,7 @@ public class Main extends Application {
                             display.stopSound(display.musicPlayer);
                             display.music = new Media(new File(display.musicFiles[1]).toURI().toString());
                             display.musicPlayer = new MediaPlayer(display.music);
+                            display.musicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
                             display.setVolume(display.musicPlayer, Main.musicVolume);
                             display.musicPlayer.setAutoPlay(true);
                             display.playSound(display.musicPlayer);

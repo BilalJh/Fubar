@@ -118,10 +118,7 @@ public class Main extends Application {
                         if(System.currentTimeMillis() - player.getMarker() > 1000) {
                             player.fire();
                             player.setMark();
-                            display.soundPlayer = new MediaPlayer(display.pistolSound);
-                            display.setVolume(display.soundPlayer, soundVolume);
-                            display.playSound(display.soundPlayer);
-                            display.soundPlayer = new MediaPlayer(display.pistolSound);
+                            display.setMark();
                         }
                         break;
                     default:

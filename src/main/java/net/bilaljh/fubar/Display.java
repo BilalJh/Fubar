@@ -59,6 +59,8 @@ public class Display {
     private final ImageView soundView;
     private final Image gun;
     private final ImageView gunView;
+    private final Image gunShot;
+    private final ImageView gunShotView;
 
 
     private final Stage primaryStage;
@@ -97,6 +99,8 @@ public class Display {
     // X- Koordinate des anzuzeigenden Gegners und der jeweilige Ray
     private Ray enemyRay;
     private double enemyX;
+
+    private long marker = 0;
 
     private final int WIDTH = Main.SCREEN_WIDTH;
     private final int HEIGHT = Main.SCREEN_HEIGHT;
@@ -186,6 +190,8 @@ public class Display {
             soundView = new ImageView(sound);
             gun = new Image("file:src/resource/Pistol.png");
             gunView = new ImageView(gun);
+            gunShot = new Image("file:src/resource/Pistol1.png");
+            gunShotView = new ImageView(gunShot);
         }
 
         // -- Hauptfenster --
@@ -387,15 +393,28 @@ public class Display {
         drawPicture(hudView, Main.GAME_WIDTH, 0, Main.SCREEN_HEIGHT, 150, 640, root);
 
         // Berechne die neue Höhe der Waffe basierend auf der aktuellen Bildschirmhöhe
-        double newHeight = 142 * (Main.SCREEN_HEIGHT / 640.0);
+        double newHeight;
 
         // Berechne die neue Breite basierend auf der neuen Höhe, um das Seitenverhältnis zu erhalten
-        double newWeaponWidth = calcNewWidth(130, 142, newHeight);
+        double newWeaponWidth;
 
 
         // Berechne die Positionen und rufe drawPicture auf
         // Rufe die drawPicture-Methode auf und setze die Bildposition und -größe
-        drawPicture(gunView, Main.GAME_WIDTH / 2.0 - newWeaponWidth / 2.0 - calcNewWidth(13), Main.SCREEN_HEIGHT - newHeight, newHeight, 130, 142, root);
+
+
+        if(Main.player.isFired()) {
+            newHeight = 200 * (Main.SCREEN_HEIGHT / 640.0);
+            newWeaponWidth = calcNewWidth(130, 200, newHeight);
+            drawPicture(gunShotView, Main.GAME_WIDTH / 2.0 - newWeaponWidth / 2.0 - calcNewWidth(13), Main.SCREEN_HEIGHT - newHeight, newHeight, 130, 200, root);
+            if(System.currentTimeMillis() - getMarker() > 300) {
+                Main.player.setFired(false);
+            }
+        } else {
+            newHeight = 142 * (Main.SCREEN_HEIGHT / 640.0);
+            newWeaponWidth = calcNewWidth(130, 142, newHeight);
+            drawPicture(gunView, Main.GAME_WIDTH / 2.0 - newWeaponWidth / 2.0 - calcNewWidth(13), Main.SCREEN_HEIGHT - newHeight, newHeight, 130, 142, root);
+        }
 
         drawLine(new Line(), GAME_WIDTH / 2.0, HEIGHT / 2.0 - HEIGHT / 100.0 * 1.7, GAME_WIDTH / 2.0, HEIGHT / 2.0 + HEIGHT / 100.0 * 1.7, 5, Color.BLACK, root);
         drawLine(new Line(), GAME_WIDTH / 2.0 - GAME_WIDTH / 100.0 * 1, HEIGHT / 2.0, GAME_WIDTH / 2.0 + GAME_WIDTH / 100.0 * 1, HEIGHT / 2.0, 5, Color.BLACK, root);
@@ -511,6 +530,14 @@ public class Display {
     }
     public void setVolume(MediaPlayer mediaPlayer, double percent) {                                          //Manipuliert Lautstärke der Musik/Sounds
         mediaPlayer.setVolume(percent / 100);
+    }
+
+    // -- Methoden für Timer
+    public void setMark() {
+        marker = System.currentTimeMillis();
+    }
+    public long getMarker() {
+        return marker;
     }
 
     //Folgende Methoden stellen Objekte je nach Parameter dar oder sind Überladungen bereits vorhandener Methoden

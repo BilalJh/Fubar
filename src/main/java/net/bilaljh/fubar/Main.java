@@ -5,10 +5,10 @@ import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 
 public class Main extends Application {
@@ -20,13 +20,14 @@ public class Main extends Application {
     public static Display display;
     public static Face face;
     public static Map map;
+    public static ScoreControl scoreControl;
 
 
     // Variablen für Bildschirmgröße
-    public static int height = (int) Screen.getPrimary().getBounds().getHeight();
-    public static int width = (int) Screen.getPrimary().getBounds().getWidth();
-    //public static int height = 1000;
-    //public static int width = 1000;
+    //public static int height = (int) Screen.getPrimary().getBounds().getHeight();
+    //public static int width = (int) Screen.getPrimary().getBounds().getWidth();
+    public static int height = 1000;
+    public static int width = 1000;
     public static int SCREEN_HEIGHT;
     public static int SCREEN_WIDTH;
     public static int GAME_WIDTH;
@@ -35,9 +36,10 @@ public class Main extends Application {
     public static int menuSelection;                            //Aktuelle Auswahl
                                                                 //1 = restart, 2 = credits, 3 = exit
     public static int gameState;                                //Aktueller Zustand im Spiel
-                                                                //1 = menu,    2 = ongoing, 3 = gameOver, 4 = settings
+                                                                //1 = menu,    2 = ongoing, 3 = gameOver, 4 = settings, 5 = scoreBoard
     public static int randomScreen, soundVolume, musicVolume;
-    public static boolean showCredits;
+    private int charSelection;
+    public static boolean showCredits, settingScore;
 
     public static Ray[] rays, enemyRays;
 
@@ -54,11 +56,13 @@ public class Main extends Application {
 
         GAME_WIDTH = SCREEN_WIDTH - Display.calcNewWidth(150, 640, SCREEN_HEIGHT);
 
-        Application.launch(args);                               //Startet die JavaFX-RuntimeEnvironment und erstellt eine Instanz vom Typ Application.class
+        Application.launch(args);                               //Startet die JavaFX-RuntimeEnvironment und erstellt eine Instanz vom Typ Application.java
     }
 
     @Override
-    public void start(Stage stage){                              //Methode zum Starten, gewissermaßen ein Pseuso Konstruktor
+    public void start(Stage stage) throws IOException {
+        //Methode zum Starten, gewissermaßen ein Pseudo Konstruktor
+        scoreControl = new ScoreControl();
         randomizer = new Random();
         map = new Map();
         engine = new Raycaster();
@@ -69,14 +73,22 @@ public class Main extends Application {
         rays = new Ray[RAY_NUMBER];
         enemyRays = new Ray[RAY_NUMBER];
         menuSelection = 1;
-        gameState = 1;
+        charSelection = 0;
+        gameState = 5;
         randomScreen = randomizer.nextInt(2);
+
         soundVolume = 50;
         musicVolume = 50;
-        showCredits = false;
 
-        display.setVolume(display.soundPlayer, 50);
-        display.setVolume(display.musicPlayer, 50);
+        /*
+        soundVolume = 50;
+        musicVolume = 50;
+         */
+        showCredits = false;
+        settingScore = false;
+
+        display.setVolume(display.soundPlayer, soundVolume);
+        display.setVolume(display.musicPlayer, musicVolume);
         display.playSound(display.musicPlayer);
 
         controls();
@@ -215,7 +227,8 @@ public class Main extends Application {
                         }
                         break;
                 }
-            } else if(gameState == 4) {                         //Steuerung von UI Elementen in den Einstellungen mithilfe von Pfeiltasten + Abspielen von Sounds
+            }
+            else if(gameState == 4) {                         //Steuerung von UI Elementen in den Einstellungen mithilfe von Pfeiltasten + Abspielen von Sounds
                 switch(keyCode) {
                     case UP:
                         if(menuSelection > 1) {
@@ -275,6 +288,39 @@ public class Main extends Application {
                             display.setVolume(display.soundPlayer, soundVolume);
                             display.playSound(display.soundPlayer);
                             display.soundPlayer = new MediaPlayer(display.startSound);
+                        }
+                        break;
+                }
+            }
+            else if(gameState == 5) {
+                switch(keyCode) {
+                    case UP:
+                        if(charSelection < 3) {
+                            scoreControl.setName(charSelection, "UP");
+                        }
+                        break;
+                    case DOWN:
+                        if(charSelection < 3) {
+                            scoreControl.setName(charSelection, "DOWN");
+                        }
+                        break;
+                    case BACK_SPACE:
+                        charSelection--;
+                        if(charSelection < 0) {
+                            charSelection = 0;
+                        }
+                        break;
+                    case ENTER:
+                        charSelection++;
+                        if(charSelection == 3) {
+                            try {
+                                scoreControl.save();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        if(charSelection > 3) {
+                            charSelection = 0;
                         }
                         break;
                 }

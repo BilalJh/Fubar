@@ -31,17 +31,19 @@ public class LostSoul extends Actor{
             player.setLife(0);
         }
 
-        move(1.7, true);                               //Bei identischer Position wird Spieler angegriffen
+        move(2.0, true);                               //Bei identischer Position wird Spieler angegriffen
         if(((int) (player.getPosX()) == (int) (posX)) && ((int) (player.getPosY()) == (int) (posY))) {
             attack();
         }
     }
 
-    public void attack() {                                          //Methode zum Angreifen des Spielers
+    public void attack() {
+        //Methode zum Angreifen des Spielers
+        ScoreControl scoreControl = Main.scoreControl;
         Player player = Main.player;
         Display display = Main.display;
 
-        player.setLife(player.getLife() - 25);
+        player.setLife(player.getLife() - 33);
 
         Main.face.setHurt();
         if(player.getLife() <= 0) {                                         //Aktualisiere gameState und Leben bei Tod des Spielers
@@ -50,7 +52,11 @@ public class LostSoul extends Actor{
             display.playSound(display.soundPlayer);
             display.soundPlayer = new MediaPlayer(display.deathSound);
             player.setLife(0);
-            Main.gameState = 3;
+            // if(scoreControl.checkScore()) {
+            //    Main.gameState = 5;
+            //} else {
+                Main.gameState = 3;
+            //}
         }
         display.drawRect(0, 0, Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, Color.RED, 0.5, Main.display.getRoot());
 

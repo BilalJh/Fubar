@@ -98,7 +98,11 @@ public class Display {
 
     // X- Koordinate des anzuzeigenden Gegners und der jeweilige Ray
     private Ray enemyRay;
+    private Ray collectibleRay;
+    private Ray medkitRay;
     private double enemyX;
+    private double collectibleX;
+    private double medkitX;
 
     private long marker = 0;
 
@@ -204,7 +208,7 @@ public class Display {
         primaryStage.setWidth(WIDTH);
         primaryStage.setHeight(HEIGHT);
         primaryStage.setResizable(false);
-        primaryStage.setFullScreen(true);
+        primaryStage.setFullScreen(false);  //TODO
         primaryStage.initStyle(StageStyle.UNDECORATED);
 
         primaryStage.setScene(primaryScene);
@@ -241,6 +245,9 @@ public class Display {
         }
         if(Main.gameState == 4) {
             drawSettings();
+        }
+        if(Main.gameState == 5) {
+            drawScoreBoard();
         }
     }
 
@@ -319,7 +326,6 @@ public class Display {
 
         drawText(WIDTH / 6.0 * 4 - 78, HEIGHT / 5.0 * 2 + 60, String.valueOf(Main.musicVolume), 100, Color.rgb(183, 146, 56), root);
         drawText(WIDTH / 6.0 * 4 - 78, HEIGHT / 5.0 * 3 + 60, String.valueOf(Main.soundVolume), 100, Color.rgb(183, 146, 56), root);
-        drawRect(WIDTH / 6.0 * 4 - 78, HEIGHT / 5.0 * 2 + 60, 10, 1, Color.BLUE, root);
     }
 
     public void draw3D() {
@@ -359,7 +365,7 @@ public class Display {
                 drawLine(lines[i], x, offset, x, endY, lineWidth, ray.getColor(), root);                    // Linie im Vordergrund
 
                 // Wenn ein Gegner im Sichtfeld ist
-                if (ray.isHit()) {
+                if(ray.isHit()) {
                     enemyRay = ray;
                     enemyX = x;
                 }
@@ -494,18 +500,26 @@ public class Display {
         drawPicture(scoreView, (double) WIDTH / 6 * 2 - 118, (double) HEIGHT / 4 * 2 - 60, root);
 
         double newHeight = 107 * (Main.SCREEN_HEIGHT / 1440.0);
-        //double lsX = ;
-        //double lsY = ;
+        double lsY = 0;
+        double lsX1 = WIDTH * (1.0/3.0) - 100;
+        double lsX2 = WIDTH * (2.0/3.0);
 
         if(Main.menuSelection == 1) {                                                                       //Je nach ausgewählter Option werden Koordinaten für Zeiger berechnet
-            drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 250 - 40, newHeight, 100, 107, root);
-            drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 250 - 40, newHeight, 100, 107, root);
+            lsY = HEIGHT - 250 - 40; // 350 - 40;
+
+            //drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 250 - 40, newHeight, 100, 107, root);
+            //drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 250 - 40, newHeight, 100, 107, root);
         }
 
         if(Main.menuSelection == 2) {
-            drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 150 - 40, newHeight, 100, 107, root);
-            drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 150 - 40, newHeight, 100, 107, root);
+            lsY = HEIGHT - 150 - 40;
+
+            //drawPicture(ls1View, (double) WIDTH / 2 - 138 - 120, HEIGHT - 150 - 40, newHeight, 100, 107, root);
+            //drawPicture(ls2View, (double) WIDTH / 2 - 138 + 20 + 279, HEIGHT - 150 - 40, newHeight, 100, 107, root);
         }
+
+        drawPicture(ls1View, lsX1, lsY, root);
+        drawPicture(ls2View, lsX2, lsY, root);
 
         drawPicture(exitView, (double) WIDTH / 2 - 69, HEIGHT - 250, root);
         drawPicture(creditsView, (double) WIDTH / 2 - 132, HEIGHT - 150, root);
@@ -522,6 +536,11 @@ public class Display {
             drawPicture(creditView,WIDTH / 2.0 - calcNewWidth(1680, 552, HEIGHT - HEIGHT * (4.5/10.0)) / 2.0, HEIGHT * (3.5/10.0), HEIGHT - HEIGHT * (4.5/10.0), 1680, 552, root);
         }
     }
+
+    public void drawScoreBoard() {
+        root.getChildren().clear();
+    }
+
     public void playSound(MediaPlayer mediaPlayer){                                                           //Methode zum Abspielen von Musik/Sounds
         mediaPlayer.play();
     }
@@ -633,6 +652,20 @@ public class Display {
         view.setY(y - (imageHeight / 2));
         group.getChildren().add(view);
     }
+
+    public void drawItem(String file, double x, double y, double distance, Group group) {
+        Image image = new Image(file);
+        ImageView view = new ImageView(image);
+
+
+        double imageHeight = (64 * HEIGHT) / distance;
+        view.setFitHeight(imageHeight);
+        view.setFitWidth(imageHeight);
+        view.setX(x - (imageHeight / 2));
+        view.setY(y - (imageHeight / 2));
+        group.getChildren().add(view);
+    }
+
 
     // Getter / Setter Methoden für javafx Gruppe / Szene
 

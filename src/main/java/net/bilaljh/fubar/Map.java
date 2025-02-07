@@ -47,12 +47,10 @@ public class Map {
             }
         }
         for(int i = 0; i <= mapBorderX; i++) {
-            int random = randomizer.nextInt(9) + 1;
             map[i][0] = randomizer.nextInt(6) + 1;
             map[i][mapBorderY] = randomizer.nextInt(6) + 1;
         }
         for(int i = 0; i < mapBorderY; i++) {
-            int random = randomizer.nextInt(9) + 1;
             map[0][i] = randomizer.nextInt(6) + 1;
             map[mapBorderX][i] = randomizer.nextInt(6) + 1;
         }

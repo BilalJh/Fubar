@@ -14,6 +14,7 @@ module net.bilaljh.fubar {
     requires annotations;
     requires java.desktop;
     requires javafx.media;
+    requires com.fazecast.jSerialComm;
 
     opens net.bilaljh.fubar to javafx.fxml;
     exports net.bilaljh.fubar;

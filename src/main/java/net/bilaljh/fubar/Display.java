@@ -37,6 +37,8 @@ public class Display {
     private final ImageView scoreView;
     private final Image exit;
     private final ImageView exitView;
+    private final Image restart;
+    private final ImageView restartView;
     private final Image credits;
     private final ImageView creditsView;
     private final Image ls1;
@@ -111,6 +113,8 @@ public class Display {
     private final int GAME_WIDTH = Main.GAME_WIDTH;
     private final int GAMEX = (int) (Screen.getPrimary().getBounds().getHeight() - (Screen.getPrimary().getBounds().getHeight() - HEIGHT));
 
+    private int controlTimer = 0;
+
 
     public Display() {
         randomizer = new Random();
@@ -170,7 +174,9 @@ public class Display {
             gameOverView = new ImageView(gameOver);
             score = new Image("file:src/resource/GameOver/Score.png");
             scoreView = new ImageView(score);
-            exit = new Image("file:src/resource/GameOver/Exit.png");
+            restart = new Image("file:src/resource/GameOver/Exit.png");
+            restartView = new ImageView(restart);
+            exit = new Image("file:src/resource/StartMenu/Settings/Exit.png");
             exitView = new ImageView(exit);
             credits = new Image("file:src/resource/Credits.png");
             creditsView = new ImageView(credits);
@@ -214,6 +220,7 @@ public class Display {
         primaryStage.setScene(primaryScene);
         primaryStage.show();
 
+
         startUpdateTimer();
     }
 
@@ -230,6 +237,14 @@ public class Display {
     }
 
     public void draw() {
+        if(controlTimer > 16 * 5) {
+            Main.controls();
+        } else {
+            controlTimer++;
+        }
+        if(controlTimer >= 1000) {
+            controlTimer = 0;
+        }
         if(Main.gameState == 1) {               //Je nach gameState werden verschiedene Anzeigen geladen
             drawMenu();
         }
@@ -278,7 +293,7 @@ public class Display {
         drawPicture(startView, (double) WIDTH / 2 - 99, HEIGHT - 350, root);
         drawPicture(settingsView, (double) WIDTH / 2 - 150, HEIGHT - 270, root);
         drawPicture(creditsView, (double) WIDTH / 2 - 132, HEIGHT - 190, root);
-        drawPicture(exitView, (double) WIDTH / 2 - 69, HEIGHT - 110, root);
+        drawPicture(restartView, (double) WIDTH / 2 - 140, HEIGHT - 110, root);
 
         if(Main.showCredits) {
             root.getChildren().clear();
@@ -499,7 +514,6 @@ public class Display {
         drawPicture(gameOverView, (double) WIDTH / 2 - 186, (double) HEIGHT / 5 * 1, root);
         drawPicture(scoreView, (double) WIDTH / 6 * 2 - 118, (double) HEIGHT / 4 * 2 - 60, root);
 
-        double newHeight = 107 * (Main.SCREEN_HEIGHT / 1440.0);
         double lsY = 0;
         double lsX1 = WIDTH * (1.0/3.0) - 100;
         double lsX2 = WIDTH * (2.0/3.0);
@@ -521,7 +535,7 @@ public class Display {
         drawPicture(ls1View, lsX1, lsY, root);
         drawPicture(ls2View, lsX2, lsY, root);
 
-        drawPicture(exitView, (double) WIDTH / 2 - 69, HEIGHT - 250, root);
+        drawPicture(restartView, (double) WIDTH / 2 - 140, HEIGHT - 250, root);
         drawPicture(creditsView, (double) WIDTH / 2 - 132, HEIGHT - 150, root);
 
         drawText((double) WIDTH / 6 * 4, (double) HEIGHT / 4 * 2, String.valueOf(player.getScore()), 100, Color.rgb(149, 0, 0), root);

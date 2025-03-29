@@ -100,11 +100,8 @@ public class Display {
 
     // X- Koordinate des anzuzeigenden Gegners und der jeweilige Ray
     private Ray enemyRay;
-    private Ray collectibleRay;
     private Ray medkitRay;
     private double enemyX;
-    private double collectibleX;
-    private double medkitX;
 
     private long marker = 0;
 
@@ -214,7 +211,7 @@ public class Display {
         primaryStage.setWidth(WIDTH);
         primaryStage.setHeight(HEIGHT);
         primaryStage.setResizable(false);
-        primaryStage.setFullScreen(false);  //TODO
+        primaryStage.setFullScreen(true);
         primaryStage.initStyle(StageStyle.UNDECORATED);
 
         primaryStage.setScene(primaryScene);
@@ -224,6 +221,9 @@ public class Display {
         startUpdateTimer();
     }
 
+    /**
+     * Gameloop, aktualisiert alle 16ms -> 60 FPS
+     */
     private void startUpdateTimer() {
         Timer timer = new Timer(true); // Daemon-Thread für den Timer
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -236,6 +236,9 @@ public class Display {
         }, 0, 16); // 16 Millisekunden (~60 FPS)
     }
 
+    /**
+     * Zeichnet aktuelle Szene
+     */
     public void draw() {
         if(controlTimer > 16 * 5) {
             Main.controls();
@@ -261,11 +264,11 @@ public class Display {
         if(Main.gameState == 4) {
             drawSettings();
         }
-        if(Main.gameState == 5) {
-            drawScoreBoard();
-        }
     }
 
+    /**
+     * Zeichnet das Hauptmenü
+     */
     public void drawMenu() {
         root.getChildren().clear();
 
@@ -281,10 +284,8 @@ public class Display {
             lsY = HEIGHT - 350 - 40;
         } else if(Main.menuSelection == 2) {
             lsY = HEIGHT - 270 - 40;
-        } else if(Main.menuSelection == 3) {
-            lsY = HEIGHT - 190 - 40;
         } else {
-            lsY = HEIGHT - 110 - 40;
+            lsY = HEIGHT - 190 - 40;
         }
 
         drawPicture(ls1View, lsX1, lsY, root);
@@ -293,7 +294,6 @@ public class Display {
         drawPicture(startView, (double) WIDTH / 2 - 99, HEIGHT - 350, root);
         drawPicture(settingsView, (double) WIDTH / 2 - 150, HEIGHT - 270, root);
         drawPicture(creditsView, (double) WIDTH / 2 - 132, HEIGHT - 190, root);
-        drawPicture(restartView, (double) WIDTH / 2 - 140, HEIGHT - 110, root);
 
         if(Main.showCredits) {
             root.getChildren().clear();
@@ -306,6 +306,9 @@ public class Display {
         }
     }
 
+    /**
+     * Zeichnet die Einstellungen
+     */
     public void drawSettings() {
         root.getChildren().clear();
 
@@ -315,9 +318,7 @@ public class Display {
         drawPicture(settingsView, (double) WIDTH / 2 - 150, (double) HEIGHT / 4 * 1 - 60, root);
 
         double newHeight = calcNewHeight(107);
-        double lsX1 = (double) WIDTH / 6 * 4;
-        double lsX2 = (double) WIDTH / 6 * 4 - calcNewWidth(225);
-        double lsY;
+        double lsX1, lsX2, lsY;
 
         if(Main.menuSelection == 1) {
             lsY = HEIGHT / 5.0 * 2 + 60 - 107;
@@ -343,6 +344,9 @@ public class Display {
         drawText(WIDTH / 6.0 * 4 - 78, HEIGHT / 5.0 * 3 + 60, String.valueOf(Main.soundVolume), 100, Color.rgb(183, 146, 56), root);
     }
 
+    /**
+     * Zeichnet das Spiel
+     */
     public void draw3D() {
         root.getChildren().clear(); // Leert die aktuelle Scene
 
@@ -397,6 +401,9 @@ public class Display {
         drawPicture(screenBackgroundView, 0, GAMEX, WIDTH, HEIGHT, HEIGHT, root);
     }
 
+    /**
+     * Zeichnet das HUD
+     */
     public void drawHUD() {
         int score = player.getScore();
         int life = player.getLife();
@@ -504,6 +511,9 @@ public class Display {
         Main.face.idle();                                                                                       //Ruft Methode zum Animieren des Gesichts auf
     }
 
+    /**
+     * Zeichnet den GameOverScreen
+     */
     public void drawGameOver() {
         root.getChildren().clear();
 
@@ -551,30 +561,57 @@ public class Display {
         }
     }
 
-    public void drawScoreBoard() {
-        root.getChildren().clear();
-    }
-
+    /**
+     * Spielt einen Sound ab
+     * @param mediaPlayer MediaPlayer, der den Sound abspielt
+     */
     public void playSound(MediaPlayer mediaPlayer){                                                           //Methode zum Abspielen von Musik/Sounds
         mediaPlayer.play();
     }
+
+    /**
+     * Pausiert einen Sound
+     * @param mediaPlayer MediaPlayer, der den Sound pausiert
+     */
     public void stopSound(MediaPlayer mediaPlayer){                                                           //Methode zum Stoppen von Musik/Sounds
         mediaPlayer.stop();
     }
+
+    /**
+     * Setzt die Lautstärke eines Sounds
+     * @param mediaPlayer MediaPlayer, dessen Lautstärke gesetzt wird
+     * @param percent Prozentuale Lautstärke (0-100)
+     */
     public void setVolume(MediaPlayer mediaPlayer, double percent) {                                          //Manipuliert Lautstärke der Musik/Sounds
         mediaPlayer.setVolume(percent / 100);
     }
 
-    // -- Methoden für Timer
+    /**
+     * Setzt den Marker auf die aktuelle Zeit
+     */
     public void setMark() {
         marker = System.currentTimeMillis();
     }
+
+    /**
+     * Gibt den Marker zurück
+     * @return Marker
+     */
     public long getMarker() {
         return marker;
     }
 
     //Folgende Methoden stellen Objekte je nach Parameter dar oder sind Überladungen bereits vorhandener Methoden
 
+    /**
+     * Zeichnet ein Rechteck
+     * @param x x-Koordinate
+     * @param y y-Koordinate
+     * @param width Breite
+     * @param height Höhe
+     * @param color Farbe
+     * @param group Gruppe, in der das Rechteck gezeichnet wird
+     */
     public void drawRect(double x, double y, double width, double height, Color color, Group group) {
         Rectangle rect = new Rectangle();
         rect.setX(x);
@@ -585,6 +622,17 @@ public class Display {
 
         group.getChildren().add(rect);
     }
+
+    /**
+     * Zeichnet ein Rechteck mit Opazität
+     * @param x x-Koordinate
+     * @param y y-Koordinate
+     * @param width Breite
+     * @param height Höhe
+     * @param color Farbe
+     * @param opacity Transparenzwert
+     * @param group Gruppe, in der das Rechteck gezeichnet wird
+     */
     public void drawRect(double x, double y, double width, double height, Color color, double opacity, Group group) {
         Rectangle rect = new Rectangle();
         rect.setX(x);
@@ -596,6 +644,18 @@ public class Display {
 
         group.getChildren().add(rect);
     }
+
+    /**
+     * Zeichnet eine Linie
+     * @param line Linie, die gezeichnet wird
+     * @param startX x-Koordinate des Startpunkts
+     * @param startY y-Koordinate des Startpunkts
+     * @param endX x-Koordinate des Endpunkts
+     * @param endY y-Koordinate des Endpunkts
+     * @param width Breite der Linie
+     * @param color Farbe der Linie
+     * @param group Gruppe, in der die Linie gezeichnet wird
+     */
     public void drawLine (Line line, double startX, double startY, double endX, double endY, double width, Color color, Group group){
         line.setStartX(startX);
         line.setStartY(startY);
@@ -605,6 +665,16 @@ public class Display {
         line.setStroke(color);
         group.getChildren().add(line);
     }
+
+    /**
+     * Zeichnet einen Text
+     * @param x x-Koordinate
+     * @param y y-Koordinate
+     * @param string Text, der gezeichnet wird
+     * @param size Schriftgröße
+     * @param color Farbe des Textes
+     * @param group Gruppe, in der der Text gezeichnet wird
+     */
     public void drawText(double x, double y, String string, int size, Color color, Group group) {
         Text texts = new Text();
         texts.setX(x);
@@ -616,6 +686,13 @@ public class Display {
         group.getChildren().add(texts);
     }
 
+    /**
+     * Zeichnet ein Bild
+     * @param view ImageView, das gezeichnet wird
+     * @param x x-Koordinate
+     * @param y y-Koordinate
+     * @param group Gruppe, in der das Bild gezeichnet wird
+     */
     public void drawPicture(ImageView view, double x, double y, Group group) {
         view.setX(x);
         view.setY(y);
@@ -625,11 +702,19 @@ public class Display {
         group.getChildren().add(view);
     }
 
+    /**
+     * Zeichnet ein Bild und skaliert es
+     * @param view ImageView, das gezeichnet wird
+     * @param x x-Koordinate
+     * @param y y-Koordinate
+     * @param newHeight Neue Höhe
+     * @param ogX Originalbreite
+     * @param ogY Originalhöhe
+     * @param group Gruppe, in der das Bild gezeichnet wird
+     */
     public void drawPicture(ImageView view, double x, double y, double newHeight, double ogX, double ogY, Group group) {
         view.setX(x);
         view.setY(y);
-
-        //view.setPreserveRatio(true);
 
         // Berechne die Breite basierend auf der neuen Höhe und setze die Breite
         view.setFitWidth(calcNewWidth(ogX, ogY, newHeight)); // Skalierung der Breite entsprechend der neuen Höhe
@@ -638,22 +723,54 @@ public class Display {
         group.getChildren().add(view);
     }
 
+    /**
+     * Berechnet die neue Breite basierend auf der Höhe
+     * @param width bereits vorhandene Breite
+     * @param height bereits vorhandene Höhe
+     * @param newHeight Neue Höhe
+     * @return neue Breite
+     */
     public static int calcNewWidth(double width, double height, double newHeight) {
         return (int) (width * (newHeight / height));
     }
 
+    /**
+     * Berechnet die neue Höhe basierend auf der Breite
+     * @param height bereits vorhandene Höhe
+     * @param width bereits vorhandene Breite
+     * @param newWidth Neue Breite
+     * @return neue Höhe
+     */
     public static int calcNewHeight(double height, double width, double newWidth) {
         return (int) (height * (newWidth / width));
     }
 
+    /**
+     * Berechnet die neue Breite basierend auf der Breite
+     * @param width bereits vorhandene Breite
+     * @return neue Breite
+     */
     public static int calcNewWidth(double width) {
         return (int) (width * (Main.SCREEN_WIDTH / 1205.0));
     }
 
+    /**
+     * Berechnet die neue Höhe basierend auf der Höhe
+     * @param height bereits vorhandene Höhe
+     * @return neue Höhe
+     */
     public static int calcNewHeight(double height) {
         return (int) (height * (Main.SCREEN_HEIGHT / 640.0));
     }
 
+    /**
+     * Zeichnet einen Gegner
+     * @param file Dateipfad des Bildes
+     * @param x x-Koordinate auf dem Bildschirm
+     * @param y y-Koordinate auf dem Bildschirm
+     * @param distance Distanz zum Spieler
+     * @param group Gruppe, in der der Gegner gezeichnet wird
+     */
     public void drawEnemy(String file, double x, double y, double distance, Group group) {
         Image image = new Image(file);
         ImageView view = new ImageView(image);
@@ -667,26 +784,11 @@ public class Display {
         group.getChildren().add(view);
     }
 
-    public void drawItem(String file, double x, double y, double distance, Group group) {
-        Image image = new Image(file);
-        ImageView view = new ImageView(image);
-
-
-        double imageHeight = (64 * HEIGHT) / distance;
-        view.setFitHeight(imageHeight);
-        view.setFitWidth(imageHeight);
-        view.setX(x - (imageHeight / 2));
-        view.setY(y - (imageHeight / 2));
-        group.getChildren().add(view);
-    }
-
-
-    // Getter / Setter Methoden für javafx Gruppe / Szene
-
+    /**
+     * Gibt die Gruppe zurück
+     * @return Gruppe
+     */
     public Group getRoot() {
         return root;
-    }
-    public Scene getPrimaryScene() {
-        return primaryScene;
     }
 }

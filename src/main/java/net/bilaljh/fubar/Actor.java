@@ -1,10 +1,15 @@
 package net.bilaljh.fubar;
 
-public class Actor {
+public abstract class Actor {
 
     public int life, mapX, mapY, score;
     public double angle, posX, posY, angleX, angleY, deltaDistX, deltaDistY, endX, endY;
 
+    /**
+     * Bewegt den Actor in seine Blickrichtung
+     * @param offset Schrittweite
+     * @param isLostSoul Existent als LostSoul
+     */
     public void move(double offset, boolean isLostSoul) {                   //Siehe castRays() Methode von Raycaster.class
         angleX = Math.cos(angle);                                           //Berechnet Richtung der Bewegung
         angleY = Math.sin(angle);
@@ -27,6 +32,12 @@ public class Actor {
             posY += angleY * offset;
         }
     }
+
+    /**
+     * Bewegt den Actor relativ zu seiner Blickrichtung
+     * @param offset Schrittweite
+     * @param direction Richtung
+     */
     public void move(double offset, String direction) {                     //Überladung der Methode zur seitlchen Bewegung
         switch(direction) {
             case "right":
@@ -79,40 +90,92 @@ public class Actor {
 
     }
 
-    // -- Getter / Setter Methoden
-
+    /**
+     * Setzt die Position des Actors
+     * @param posX x-Koordinate
+     * @param posY y-Koordinate
+     */
     public void setLocation(int posX, int posY) {
         setPosX(posX);
         setPosY(posY);
     }
 
+    /**
+     * Gibt Lebenspunkte des Actors zurück
+     * @return Lebenspunkte
+     */
     public int getLife() {
         return life;
     }
+
+    /**
+     * Setzt Lebenspunkte des Actors
+     * @param life Lebenspunkte
+     */
     public void setLife(int life) {
         this.life = life;
     }
+
+    /**
+     * Gibt die Blickrichtung des Actors zurück
+     * @return Blickrichtung
+     */
     public double getAngle() {
         return angle;
     }
+
+    /**
+     * Setzt die Blickrichtung des Actors
+     * @param angle Blickrichtung
+     */
     public void setAngle(double angle) {
         this.angle = angle;
     }
+
+    /**
+     * Gibt die x-Koordinate des Actors zurück
+     * @return x-Koordinate
+     */
     public double getPosX() {
         return posX;
     }
+
+    /**
+     * Setzt die x-Koordinate des Actors
+     * @param posX x-Koordinate
+     */
     public void setPosX(int posX) {
         this.posX = posX;
     }
+
+    /**
+     * Gibt die y-Koordinate des Actors zurück
+     * @return y-Koordinate
+     */
     public double getPosY() {
         return posY;
     }
+
+    /**
+     * Setzt die y-Koordinate des Actors
+     * @param posY y-Koordinate
+     */
     public void setPosY(int posY) {
         this.posY = posY;
     }
+
+    /**
+     * Gibt den Punktestand zurück
+     * @return Punktestand
+     */
     public int getScore() {
         return score;
     }
+
+    /**
+     * Setzt den Punktestand
+     * @param score Punktestand
+     */
     public void setScore(int score) {
         this.score = score;
     }

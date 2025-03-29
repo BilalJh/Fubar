@@ -8,6 +8,7 @@ public class SerialReader {
     private long marker;
 
     public SerialReader() {
+        //serialPort = SerialPort.getCommPorts()[1];
         serialPort = SerialPort.getCommPorts()[1];
 
         serialPort.setBaudRate(115200);
@@ -21,6 +22,10 @@ public class SerialReader {
         System.out.println("Serial port: " + serialPort.getSystemPortName());
     }
 
+    /**
+     * Liest die Daten aus dem Serial Port und gibt sie als int[] zurück
+     * @return Daten des Serial Ports
+     */
     public int[] read() {
         int[] data = new int[1];
         byte[] buffer = new byte[1024];
@@ -44,12 +49,18 @@ public class SerialReader {
         return data;
     }
 
-    // -- Methoden für Timer
+    /**
+     * Setzt den Marker auf die aktuelle Zeit
+     */
     public void setMark() {
         marker = System.currentTimeMillis();
     }
+
+    /**
+     * Gibt den Marker zurück
+     * @return Marker
+     */
     public long getMarker() {
         return marker;
     }
-
 }

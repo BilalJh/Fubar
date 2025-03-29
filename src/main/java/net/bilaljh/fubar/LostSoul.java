@@ -13,6 +13,11 @@ public class LostSoul extends Actor{
         this.angle = angle;
     }
 
+    /**
+     * Zeichnet den Gegner auf dem Bildschirm
+     * @param screenX x-Koordinate auf dem Bildschirm
+     * @param screenY y-Koordinate auf dem Bildschirm
+     */
     public void show(double screenX, double screenY) {              //Methode zum Anzeigen des Gegners
         Player player = Main.player;
         double distance = Math.sqrt(((posX - player.getPosX()) * (posX - player.getPosX())) + ((posY - player.getPosY()) * (posY - player.getPosY())));
@@ -22,6 +27,9 @@ public class LostSoul extends Actor{
         }
     }
 
+    /**
+     * Aktualisiert die Richtung des Gegners und bewegt ihn
+     */
     public void idle() {                                            ///Methode zum "Beleben" des Gegners
         Player player = Main.player;
 
@@ -37,9 +45,11 @@ public class LostSoul extends Actor{
         }
     }
 
+    /**
+     * Greift den Spieler an und zieht ihm 33 Lebenspunkte ab
+     */
     public void attack() {
         //Methode zum Angreifen des Spielers
-        ScoreControl scoreControl = Main.scoreControl;
         Player player = Main.player;
         Display display = Main.display;
 
@@ -52,11 +62,7 @@ public class LostSoul extends Actor{
             display.playSound(display.soundPlayer);
             display.soundPlayer = new MediaPlayer(display.deathSound);
             player.setLife(0);
-            // if(scoreControl.checkScore()) {
-            //    Main.gameState = 5;
-            //} else {
-                Main.gameState = 3;
-            //}
+            Main.gameState = 3;
         }
         display.drawRect(0, 0, Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, Color.RED, 0.5, Main.display.getRoot());
 
@@ -67,6 +73,9 @@ public class LostSoul extends Actor{
         display.soundPlayer = new MediaPlayer(display.painSound);
     }
 
+    /**
+     * Zeichnet Effekte bei Abschuss des Gegners
+     */
     public void die() {                                                         //Methode zum "Sterben" des Gegners
         Player player = Main.player;
         player.setScore(player.getScore() + 100);
@@ -81,6 +90,9 @@ public class LostSoul extends Actor{
         respawn();
     }
 
+    /**
+     * Setzt die Position des Gegners zurück
+     */
     public void respawn() {                                                     //Methode um Gegner "neu zu erzeugen", wobei nur eine neue Position ausgewählt wird
         Map map = Main.map;
         Random randomizer = new Random();

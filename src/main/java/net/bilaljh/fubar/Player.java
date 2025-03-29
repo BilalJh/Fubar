@@ -24,7 +24,10 @@ public class Player extends Actor {
         setLife(100);
     }
 
-    public void regenerate() {                                                  //Methode um Teil der Spielerleben zu generieren
+    /**
+     * Regeneriert Kondition
+     */
+    public void regenerate() {
         int random = randomizer.nextInt(10000);
 
         if(random == 0) {
@@ -32,6 +35,9 @@ public class Player extends Actor {
         }
     }
 
+    /**
+     * Feuert einen Schuss ab
+     */
     public void fire() {                                                        //Methode zum Schießen
         Main.engine.castShot();
 
@@ -42,17 +48,33 @@ public class Player extends Actor {
         Main.display.soundPlayer = new MediaPlayer(Main.display.pistolSound);
     }
 
+    /**
+     * Überprüft, ob der Spieler einen Schuss abgegeben hat
+     * @return true, wenn der Spieler einen Schuss abgegeben hat
+     */
     public boolean isFired() {
         return fired;
     }
+
+    /**
+     * Setzt den Schussstatus des Spielers
+     * @param fired true, wenn der Spieler einen Schuss abgegeben hat
+     */
     public void setFired(boolean fired) {
         this.fired = fired;
     }
 
-    // -- Methoden für Timer
+    /**
+     * Setzt den Marker auf die aktuelle Zeit
+     */
     public void setMark() {
         marker = System.currentTimeMillis();
     }
+
+    /**
+     * Gibt den Marker zurück
+     * @return Marker
+     */
     public long getMarker() {
         return marker;
     }

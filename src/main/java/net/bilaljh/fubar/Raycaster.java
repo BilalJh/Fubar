@@ -7,7 +7,10 @@ public class Raycaster {
     private int[][] map = Main.map.map;
     Color wallColor;
 
-
+    /**
+     * Raycasting Algorithmus
+     * Berechnet einen Ray
+     */
     public void castRays() {                                                                            //Methode zum Berechnen der Anzeige, mithilfe des DDA Raycasting Algorithmus
         Player player = Main.player;
         double playerPosX = player.getPosX();                                                           // Spielerposition X
@@ -91,6 +94,10 @@ public class Raycaster {
         }
     }
 
+    /**
+     * Raycasting Algorithmus
+     * Berechnet einen Schuss
+     */
     public void castShot() {                                                                        //Siehe castRays() Methode
         Player player = Main.player;
         double playerPosX = player.getPosX();
@@ -119,7 +126,12 @@ public class Raycaster {
         }
     }
 
-    //Methode zur Überprüfung der Kollision mit dem LostSoul
+    /**
+     * Überprüft ob der Spieler mit der LostSoul kollidiert
+     * @param playerX x-Koordinate des Spielers
+     * @param playerY y-Koordinate des Spielers
+     * @return true wenn Spieler und LostSoul auf der gleichen Position sind
+     */
     public boolean collidesWithLostSoul(double playerX, double playerY) {
         LostSoul ls = Main.lostSoul;
 

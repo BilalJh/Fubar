@@ -5,7 +5,9 @@ import javafx.scene.image.ImageView;
 
 public class Face {
 
-    //SpriteSheets für Gesicht
+    /**
+     * SpriteSheets für Standardgesicht
+     */
     private String[][] standardSheet = {
             {
                 "file:src/resource/Standard/STFST00.png",
@@ -33,6 +35,10 @@ public class Face {
                 "file:src/resource/Standard/STFST42.png"
             }
     };
+
+    /**
+     * SpriteSheets für wütendes Gesicht
+     */
     private String[] evil = {
             "file:src/resource/Evil/STFEVL0.png",
             "file:src/resource/Evil/STFEVL1.png",
@@ -40,6 +46,10 @@ public class Face {
             "file:src/resource/Evil/STFEVL3.png",
             "file:src/resource/Evil/STFEVL4.png",
     };
+
+    /**
+     * SpriteSheets für schmerzhaftes Gesicht
+     */
     private String[] ouch = {
             "file:src/resource/Ouch/STFOUCH0.png",
             "file:src/resource/Ouch/STFOUCH1.png",
@@ -47,7 +57,15 @@ public class Face {
             "file:src/resource/Ouch/STFOUCH3.png",
             "file:src/resource/Ouch/STFOUCH4.png",
     };
+
+    /**
+     * SpriteSheet für GodMode
+     */
     private String god = "file:src/resource/STFGOD0.png";
+
+    /**
+     * SpriteSheet für Tod
+     */
     private String dead = "file:src/resource/STFDEAD0.png";
 
     private String current;
@@ -63,7 +81,10 @@ public class Face {
         isHurt = false;
     }
 
-    public void idle() {                    //Methode zum Animieren des Gesicht
+    /**
+     * Animiert das Gesicht
+     */
+    public void idle() {
         Player player = Main.player;
 
         if(player.getLife() > 100) {                    //Je nach Anzahl der Leben wird Wert für Blut im Gesicht geändert
@@ -105,23 +126,36 @@ public class Face {
         }
     }
 
+    /**
+     * Zeichnet das Gesicht
+     * @param currentString Sprite
+     */
     public void drawFace(String currentString) {        //Methode zum Zeichnen des Gesichts
         Image face = new Image(currentString);
         ImageView faceView = new ImageView(face);
         Main.display.drawPicture(faceView, Main.GAME_WIDTH + Display.calcNewWidth(150, 640, Main.SCREEN_HEIGHT) / 2.0 - Display.calcNewWidth(100, 128, 128 * (Main.SCREEN_HEIGHT / 640.0)) / 2.0 , Main.SCREEN_HEIGHT / 2.0 - Display.calcNewHeight(100) / 2.0, Display.calcNewHeight(128), 100, 128, Main.display.getRoot());
     }
 
+    /**
+     * Setzt isEvil
+     */
     public void setEvil() {
         isEvil = true;
         setMark();
     }
+
+    /**
+     * Setzt isHurt
+     */
     public void setHurt() {
         isHurt = true;
         setMark();
     }
 
-
-    public void setMark() {                             //Methode zum Speichern der Zeit
+    /**
+     * Setzt den Marker auf die aktuelle Zeit
+     */
+    public void setMark() {
         marker = System.currentTimeMillis();
     }
 }

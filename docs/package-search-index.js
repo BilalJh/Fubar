@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"Alle Packages","u":"allpackages-index.html"},{"m":"net.bilaljh.fubar","l":"net.bilaljh.fubar"}];updateSearchResults();

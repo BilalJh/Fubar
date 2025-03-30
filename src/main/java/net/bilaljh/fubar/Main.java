@@ -39,7 +39,7 @@ public class Main extends Application {
     public static int gameState;                                //Aktueller Zustand im Spiel
                                                                 //1 = menu,    2 = ongoing, 3 = gameOver, 4 = settings
     public static int soundVolume, musicVolume;
-    public static boolean showCredits, settingScore;
+    public static boolean showCredits, settingScore, startable;
 
     public static Ray[] rays, enemyRays;
 
@@ -62,6 +62,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         //Methode zum Starten, gewissermaßen ein Pseudo Konstruktor
+        startable = false;
         serialReader = new SerialReader();
         randomizer = new Random();
         map = new Map();
@@ -99,8 +100,6 @@ public class Main extends Application {
         int[] controls;
         controls = serialReader.read();
 
-        System.out.println(Arrays.toString(controls));
-
         if(controls.length == 7) {
             if(gameState == 1) {
                 if(System.currentTimeMillis() - serialReader.getMarker() > 200) {
@@ -123,9 +122,9 @@ public class Main extends Application {
                             display.soundPlayer = new MediaPlayer(display.itemSound);
                         }
                     }
-                    if (controls[2] == 1) {
+                    if(controls[2] == 1) {
                         serialReader.setMark();
-                        if (menuSelection == 1) {
+                        if(menuSelection == 1 && startable) {
                             if (showCredits) {
                                 showCredits = false;            //Schließt Dankaussagungen
                             }
@@ -292,5 +291,22 @@ public class Main extends Application {
         gameState = 1;
         player.setLife(100);
         player.setScore(0);
+        startable = false;
+    }
+
+    /**
+     * Setzt die Einstellung um das Spiel starten zu können -> RFID-Key
+     * @param startable boolean Wert, ob das Spiel gestartet werden kann
+     */
+    public static void setStartable(boolean startable) {
+        Main.startable = startable;
+    }
+
+    /**
+     * Gibt den Wert zurück, ob das Spiel gestartet werden kann
+     * @return boolean Wert, ob das Spiel gestartet werden kann
+     */
+    public static boolean getStartable() {
+        return startable;
     }
 }

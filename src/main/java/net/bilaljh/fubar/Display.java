@@ -27,6 +27,8 @@ public class Display {
     // !!! Chronologisch nach Aufruf   !!!
     private final Image screenBackground;
     private final ImageView screenBackgroundView;
+    private final Image tagImage;
+    private final ImageView tagImageView;
     private final Image hud;
     private final ImageView hudView;
     private final Image background;
@@ -104,6 +106,8 @@ public class Display {
     private double enemyX;
 
     private long marker = 0;
+    private long tagMarker = 0;
+    private boolean tagToggle = false;
 
     private final int WIDTH = Main.SCREEN_WIDTH;
     private final int HEIGHT = Main.SCREEN_HEIGHT;
@@ -163,6 +167,8 @@ public class Display {
         {
             screenBackground = new Image("file:src/resource/StartMenu/Background.png");
             screenBackgroundView = new ImageView(screenBackground);
+            tagImage = new Image("file:src/resource/StartMenu/Tag.png");
+            tagImageView = new ImageView(tagImage);
             hud = new Image("file:src/resource/Hud.png");
             hudView = new ImageView(hud);
             background = new Image("file:src/resource/GameOver/Background.png");
@@ -225,6 +231,7 @@ public class Display {
      * Gameloop, aktualisiert alle 16ms -> 60 FPS
      */
     private void startUpdateTimer() {
+        tagMarker = System.currentTimeMillis();
         Timer timer = new Timer(true); // Daemon-Thread für den Timer
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -276,6 +283,18 @@ public class Display {
         drawPicture(backgroundView,0, 0, Main.SCREEN_HEIGHT, 1280, 720, root);
         drawRect(0, 0, WIDTH, Screen.getPrimary().getBounds().getHeight(), Color.rgb(0, 0, 0), 0.6, root);
         drawPicture(fubarView, (double) WIDTH / 2 - 168, (double) HEIGHT / 4 * 1 - 60, root);
+
+        if(System.currentTimeMillis() - tagMarker > 800) {
+            tagToggle = !tagToggle;
+            tagMarker = System.currentTimeMillis();
+        }
+
+        if(!Main.getStartable()) {
+            if(tagToggle) {
+                drawPicture(tagImageView, WIDTH / 2.0 - 450, HEIGHT / 2.0, root);
+            }
+        }
+
 
         double lsX1 = WIDTH * (1.0/3.0) - 100;
         double lsX2 = WIDTH * (2.0/3.0);
